@@ -845,8 +845,8 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.centauri_carbon_print_status
-        from: "Printing"
-        to: "Idle"
+        from: "printing"
+        to: "idle"
     condition:
       - condition: state
         entity_id: input_boolean.spool_tracking_enabled

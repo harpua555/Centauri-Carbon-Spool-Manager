@@ -131,7 +131,7 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.centauri_carbon_print_status
-        to: "Printing"
+        to: "printing"
     condition:
       - condition: template
         value_template: "{{ states('input_select.active_spool') != 'None' }}"
@@ -173,7 +173,7 @@ automation:
     condition:
       - condition: state
         entity_id: sensor.centauri_carbon_print_status
-        state: "Printing"
+        state: "printing"
     action:
       - service: input_text.set_value
         target:
@@ -187,8 +187,8 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.centauri_carbon_print_status
-        from: "Printing"
-        to: "Idle"
+        from: "printing"
+        to: "idle"
     condition:
       - condition: template
         value_template: "{{ states('input_text.current_print_spool') != 'None' }}"
