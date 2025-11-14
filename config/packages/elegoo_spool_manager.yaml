@@ -292,19 +292,19 @@ template:
           {% if active == 'Spool 1' %}
             {% set initial = states('input_number.spool_1_initial_length') | float(0) %}
             {% set used = states('input_number.spool_1_used_length') | float(0) %}
-            {{ (initial - used) | max(0) | round(2) }}
+            {{ [initial - used, 0] | max | round(2) }}
           {% elif active == 'Spool 2' %}
             {% set initial = states('input_number.spool_2_initial_length') | float(0) %}
             {% set used = states('input_number.spool_2_used_length') | float(0) %}
-            {{ (initial - used) | max(0) | round(2) }}
+            {{ [initial - used, 0] | max | round(2) }}
           {% elif active == 'Spool 3' %}
             {% set initial = states('input_number.spool_3_initial_length') | float(0) %}
             {% set used = states('input_number.spool_3_used_length') | float(0) %}
-            {{ (initial - used) | max(0) | round(2) }}
+            {{ [initial - used, 0] | max | round(2) }}
           {% elif active == 'Spool 4' %}
             {% set initial = states('input_number.spool_4_initial_length') | float(0) %}
             {% set used = states('input_number.spool_4_used_length') | float(0) %}
-            {{ (initial - used) | max(0) | round(2) }}
+            {{ [initial - used, 0] | max | round(2) }}
           {% else %}
             0
           {% endif %}
@@ -342,7 +342,7 @@ template:
             {% set used_len = 0 %}
             {% set density = 1.24 %}
           {% endif %}
-          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {% set remaining_len = [initial_len - used_len, 0] | max %}
           {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
         icon: mdi:scale
 
@@ -355,7 +355,7 @@ template:
         state: >
           {% set initial = states('input_number.spool_1_initial_length') | float(0) %}
           {% set used = states('input_number.spool_1_used_length') | float(0) %}
-          {{ (initial - used) | max(0) | round(2) }}
+          {{ [initial - used, 0] | max | round(2) }}
         icon: mdi:printer-3d-nozzle
         attributes:
           name: "{{ states('input_text.spool_1_name') }}"
@@ -384,7 +384,7 @@ template:
           {% set initial_len = states('input_number.spool_1_initial_length') | float(0) %}
           {% set used_len = states('input_number.spool_1_used_length') | float(0) %}
           {% set density = states('input_number.spool_1_density') | float(1.24) %}
-          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {% set remaining_len = [initial_len - used_len, 0] | max %}
           {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
         icon: mdi:scale
 
@@ -397,7 +397,7 @@ template:
         state: >
           {% set initial = states('input_number.spool_2_initial_length') | float(0) %}
           {% set used = states('input_number.spool_2_used_length') | float(0) %}
-          {{ (initial - used) | max(0) | round(2) }}
+          {{ [initial - used, 0] | max | round(2) }}
         icon: mdi:printer-3d-nozzle
         attributes:
           name: "{{ states('input_text.spool_2_name') }}"
@@ -426,7 +426,7 @@ template:
           {% set initial_len = states('input_number.spool_2_initial_length') | float(0) %}
           {% set used_len = states('input_number.spool_2_used_length') | float(0) %}
           {% set density = states('input_number.spool_2_density') | float(1.24) %}
-          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {% set remaining_len = [initial_len - used_len, 0] | max %}
           {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
         icon: mdi:scale
 
@@ -439,7 +439,7 @@ template:
         state: >
           {% set initial = states('input_number.spool_3_initial_length') | float(0) %}
           {% set used = states('input_number.spool_3_used_length') | float(0) %}
-          {{ (initial - used) | max(0) | round(2) }}
+          {{ [initial - used, 0] | max | round(2) }}
         icon: mdi:printer-3d-nozzle
         attributes:
           name: "{{ states('input_text.spool_3_name') }}"
@@ -468,7 +468,7 @@ template:
           {% set initial_len = states('input_number.spool_3_initial_length') | float(0) %}
           {% set used_len = states('input_number.spool_3_used_length') | float(0) %}
           {% set density = states('input_number.spool_3_density') | float(1.24) %}
-          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {% set remaining_len = [initial_len - used_len, 0] | max %}
           {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
         icon: mdi:scale
 
@@ -481,7 +481,7 @@ template:
         state: >
           {% set initial = states('input_number.spool_4_initial_length') | float(0) %}
           {% set used = states('input_number.spool_4_used_length') | float(0) %}
-          {{ (initial - used) | max(0) | round(2) }}
+          {{ [initial - used, 0] | max | round(2) }}
         icon: mdi:printer-3d-nozzle
         attributes:
           name: "{{ states('input_text.spool_4_name') }}"
@@ -510,9 +510,10 @@ template:
           {% set initial_len = states('input_number.spool_4_initial_length') | float(0) %}
           {% set used_len = states('input_number.spool_4_used_length') | float(0) %}
           {% set density = states('input_number.spool_4_density') | float(1.24) %}
-          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {% set remaining_len = [initial_len - used_len, 0] | max %}
           {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
         icon: mdi:scale
+
 
 automation:
   # Auto-update density when material type changes
