@@ -14,9 +14,10 @@ coverage.xml
 .envrc
 
 # Home Assistant configuration
-#config/*
-config/README.md
+config/*
 !config/configuration.yaml
+!config/dashboards/*
+!config/packages/*
 
 # CC2 extraction output
 cc2_extractions/
