@@ -204,3 +204,5 @@ posts
 response.md
 .claude/*
 .vscode/*
+
+uv.lock
