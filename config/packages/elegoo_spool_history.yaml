@@ -130,7 +130,7 @@ automation:
     alias: "Elegoo: Track Print Start"
     trigger:
       - platform: state
-        entity_id: sensor.elegoo_printer_print_status  # Adjust to your status sensor
+        entity_id: sensor.centauri_carbon_print_status
         to: "printing"
     condition:
       - condition: template
@@ -169,10 +169,10 @@ automation:
     alias: "Elegoo: Track Print Extrusion"
     trigger:
       - platform: state
-        entity_id: sensor.elegoo_printer_total_extrusion
+        entity_id: sensor.centauri_carbon_total_extrusion
     condition:
       - condition: state
-        entity_id: sensor.elegoo_printer_print_status
+        entity_id: sensor.centauri_carbon_print_status
         state: "printing"
     action:
       - service: input_text.set_value
@@ -186,7 +186,7 @@ automation:
     alias: "Elegoo: Log Print Completion"
     trigger:
       - platform: state
-        entity_id: sensor.elegoo_printer_print_status  # Adjust to your status sensor
+        entity_id: sensor.centauri_carbon_print_status
         to: "complete"
     condition:
       - condition: template
@@ -197,7 +197,7 @@ automation:
           name: "Print Completed"
           message: >
             Completed print on {{ states('input_text.current_print_spool') }}
-            ({{ states('sensor.elegoo_printer_filename') | default('Unknown') }})
+            ({{ states('sensor.centauri_carbon_file_name') | default('Unknown') }})
           entity_id: "{{ 'input_select.active_spool' }}"
       # Backup current used length for undo
       - choose:

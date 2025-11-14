@@ -844,7 +844,7 @@ automation:
     description: "Adds the total extrusion from the completed print to the active spool's used length"
     trigger:
       - platform: state
-        entity_id: sensor.elegoo_printer_print_status
+        entity_id: sensor.centauri_carbon_print_status
         to: "complete"
     condition:
       - condition: state
