@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/python.exe:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python test_extrusion.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
