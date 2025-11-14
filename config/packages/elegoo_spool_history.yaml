@@ -174,28 +174,36 @@ automation:
           entity_id: "{{ 'input_select.active_spool' }}"
       # Backup current used length for undo
       - choose:
-          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 1' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ states('input_text.current_print_spool') == 'Spool 1' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_last_used_length
                 data:
                   value: "{{ states('input_text.current_print_start_length') | float(0) }}"
-          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 2' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ states('input_text.current_print_spool') == 'Spool 2' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_last_used_length
                 data:
                   value: "{{ states('input_text.current_print_start_length') | float(0) }}"
-          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 3' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ states('input_text.current_print_spool') == 'Spool 3' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_last_used_length
                 data:
                   value: "{{ states('input_text.current_print_start_length') | float(0) }}"
-          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 4' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ states('input_text.current_print_spool') == 'Spool 4' }}"
             sequence:
               - service: input_number.set_value
                 target:
