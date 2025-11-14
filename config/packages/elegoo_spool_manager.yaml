@@ -524,42 +524,54 @@ automation:
         entity_id: input_select.spool_1_material
     action:
       - choose:
-          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PLA' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_density
                 data:
                   value: 1.24
-          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PETG' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_density
                 data:
                   value: 1.27
-          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ABS' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_density
                 data:
                   value: 1.04
-          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'TPU' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_density
                 data:
                   value: 1.21
-          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'Nylon' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_1_density
                 data:
                   value: 1.14
-          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ASA' }}"
             sequence:
               - service: input_number.set_value
                 target:
@@ -574,42 +586,54 @@ automation:
         entity_id: input_select.spool_2_material
     action:
       - choose:
-          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PLA' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_density
                 data:
                   value: 1.24
-          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PETG' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_density
                 data:
                   value: 1.27
-          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ABS' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_density
                 data:
                   value: 1.04
-          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'TPU' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_density
                 data:
                   value: 1.21
-          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'Nylon' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_2_density
                 data:
                   value: 1.14
-          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ASA' }}"
             sequence:
               - service: input_number.set_value
                 target:
@@ -624,42 +648,54 @@ automation:
         entity_id: input_select.spool_3_material
     action:
       - choose:
-          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PLA' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_density
                 data:
                   value: 1.24
-          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PETG' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_density
                 data:
                   value: 1.27
-          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ABS' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_density
                 data:
                   value: 1.04
-          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'TPU' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_density
                 data:
                   value: 1.21
-          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'Nylon' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_3_density
                 data:
                   value: 1.14
-          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ASA' }}"
             sequence:
               - service: input_number.set_value
                 target:
@@ -674,42 +710,54 @@ automation:
         entity_id: input_select.spool_4_material
     action:
       - choose:
-          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PLA' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_4_density
                 data:
                   value: 1.24
-          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'PETG' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_4_density
                 data:
                   value: 1.27
-          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ABS' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_4_density
                 data:
                   value: 1.04
-          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'TPU' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_4_density
                 data:
                   value: 1.21
-          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'Nylon' }}"
             sequence:
               - service: input_number.set_value
                 target:
                   entity_id: input_number.spool_4_density
                 data:
                   value: 1.14
-          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+          - conditions:
+              - condition: template
+                value_template: "{{ trigger.to_state.state == 'ASA' }}"
             sequence:
               - service: input_number.set_value
                 target:

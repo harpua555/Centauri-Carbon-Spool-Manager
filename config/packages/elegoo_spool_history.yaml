@@ -197,7 +197,7 @@ automation:
           name: "Print Completed"
           message: >
             Completed print on {{ states('input_text.current_print_spool') }}
-            ({{ states('sensor.elegoo_printer_file_name') | default('Unknown') }})
+            ({{ states('sensor.elegoo_printer_filename') | default('Unknown') }})
           entity_id: "{{ 'input_select.active_spool' }}"
       # Backup current used length for undo
       - choose:
