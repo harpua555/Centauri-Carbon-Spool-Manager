@@ -1,0 +1,120 @@
+# Elegoo Filament Spool Manager Dashboard Card (Simple Version)
+# This version uses only built-in cards - no custom card requirements
+# Copy this configuration into your Lovelace dashboard
+# Go to: Settings -> Dashboards -> [Your Dashboard] -> Edit -> Add Card -> Manual YAML
+
+type: vertical-stack
+cards:
+  # Header Card
+  - type: markdown
+    content: |
+      ## 🎨 Filament Spool Manager
+      Track and manage your 3D printer filament spools
+
+  # Active Spool Control Panel
+  - type: entities
+    title: Active Spool Control
+    state_color: true
+    entities:
+      - entity: input_boolean.spool_tracking_enabled
+        name: "🔄 Enable Tracking"
+      - entity: input_select.active_spool
+        name: "📍 Active Spool"
+      - type: divider
+      - entity: sensor.active_spool_name
+        name: "🏷️ Current Spool"
+        icon: mdi:label
+      - entity: sensor.remaining_filament
+        name: "📏 Remaining Filament"
+        icon: mdi:gauge
+
+  # Remaining Filament Gauge
+  - type: gauge
+    entity: sensor.remaining_filament
+    name: Remaining on Active Spool
+    unit: mm
+    min: 0
+    max: 100000
+    severity:
+      green: 50000
+      yellow: 20000
+      red: 0
+    needle: true
+
+  # All Spools Overview
+  - type: entities
+    title: All Spools Overview
+    state_color: true
+    entities:
+      - entity: sensor.spool_1_remaining
+        name: "{{ states('input_text.spool_1_name') }}"
+        secondary_info: last-changed
+        icon: mdi:printer-3d-nozzle
+      - entity: sensor.spool_2_remaining
+        name: "{{ states('input_text.spool_2_name') }}"
+        secondary_info: last-changed
+        icon: mdi:printer-3d-nozzle
+      - entity: sensor.spool_3_remaining
+        name: "{{ states('input_text.spool_3_name') }}"
+        secondary_info: last-changed
+        icon: mdi:printer-3d-nozzle
+      - entity: sensor.spool_4_remaining
+        name: "{{ states('input_text.spool_4_name') }}"
+        secondary_info: last-changed
+        icon: mdi:printer-3d-nozzle
+
+  # Spool 1 Details
+  - type: entities
+    title: Spool 1 Configuration
+    state_color: true
+    entities:
+      - entity: input_text.spool_1_name
+        name: "✏️ Name"
+      - entity: input_number.spool_1_initial_length
+        name: "📦 Initial Length"
+      - entity: input_number.spool_1_used_length
+        name: "🔄 Used Length"
+      - entity: sensor.spool_1_remaining
+        name: "📊 Remaining"
+
+  # Spool 2 Details
+  - type: entities
+    title: Spool 2 Configuration
+    state_color: true
+    entities:
+      - entity: input_text.spool_2_name
+        name: "✏️ Name"
+      - entity: input_number.spool_2_initial_length
+        name: "📦 Initial Length"
+      - entity: input_number.spool_2_used_length
+        name: "🔄 Used Length"
+      - entity: sensor.spool_2_remaining
+        name: "📊 Remaining"
+
+  # Spool 3 Details
+  - type: entities
+    title: Spool 3 Configuration
+    state_color: true
+    entities:
+      - entity: input_text.spool_3_name
+        name: "✏️ Name"
+      - entity: input_number.spool_3_initial_length
+        name: "📦 Initial Length"
+      - entity: input_number.spool_3_used_length
+        name: "🔄 Used Length"
+      - entity: sensor.spool_3_remaining
+        name: "📊 Remaining"
+
+  # Spool 4 Details
+  - type: entities
+    title: Spool 4 Configuration
+    state_color: true
+    entities:
+      - entity: input_text.spool_4_name
+        name: "✏️ Name"
+      - entity: input_number.spool_4_initial_length
+        name: "📦 Initial Length"
+      - entity: input_number.spool_4_used_length
+        name: "🔄 Used Length"
+      - entity: sensor.spool_4_remaining
+        name: "📊 Remaining"

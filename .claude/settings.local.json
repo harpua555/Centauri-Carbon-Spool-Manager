@@ -3,7 +3,9 @@
     "allow": [
       "Bash(.venv/Scripts/python.exe:*)",
       "Bash(python -m pytest:*)",
-      "Bash(python test_extrusion.py:*)"
+      "Bash(python test_extrusion.py:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,852 @@
+# Elegoo Filament Spool Manager with Weight & Density Support
+# This package provides filament tracking for up to 4 spools
+# Supports both length (mm) and weight (g) tracking with material density
+# Formula: Weight (g) = (π * r² * length * density) where r = filament_diameter/2
+
+input_text:
+  spool_1_name:
+    name: "Spool 1 Name"
+    initial: "Spool 1"
+    icon: mdi:printer-3d-nozzle
+
+  spool_2_name:
+    name: "Spool 2 Name"
+    initial: "Spool 2"
+    icon: mdi:printer-3d-nozzle
+
+  spool_3_name:
+    name: "Spool 3 Name"
+    initial: "Spool 3"
+    icon: mdi:printer-3d-nozzle
+
+  spool_4_name:
+    name: "Spool 4 Name"
+    initial: "Spool 4"
+    icon: mdi:printer-3d-nozzle
+
+input_select:
+  active_spool:
+    name: "Active Filament Spool"
+    options:
+      - "None"
+      - "Spool 1"
+      - "Spool 2"
+      - "Spool 3"
+      - "Spool 4"
+    initial: "None"
+    icon: mdi:printer-3d-nozzle-outline
+
+  # Material type selectors with preset densities
+  spool_1_material:
+    name: "Spool 1 Material"
+    options:
+      - "Custom"
+      - "PLA"
+      - "PETG"
+      - "ABS"
+      - "TPU"
+      - "Nylon"
+      - "ASA"
+    initial: "PLA"
+    icon: mdi:chemical-weapon
+
+  spool_2_material:
+    name: "Spool 2 Material"
+    options:
+      - "Custom"
+      - "PLA"
+      - "PETG"
+      - "ABS"
+      - "TPU"
+      - "Nylon"
+      - "ASA"
+    initial: "PLA"
+    icon: mdi:chemical-weapon
+
+  spool_3_material:
+    name: "Spool 3 Material"
+    options:
+      - "Custom"
+      - "PLA"
+      - "PETG"
+      - "ABS"
+      - "TPU"
+      - "Nylon"
+      - "ASA"
+    initial: "PLA"
+    icon: mdi:chemical-weapon
+
+  spool_4_material:
+    name: "Spool 4 Material"
+    options:
+      - "Custom"
+      - "PLA"
+      - "PETG"
+      - "ABS"
+      - "TPU"
+      - "Nylon"
+      - "ASA"
+    initial: "PLA"
+    icon: mdi:chemical-weapon
+
+input_boolean:
+  spool_tracking_enabled:
+    name: "Enable Spool Tracking"
+    initial: true
+    icon: mdi:chart-line
+
+input_number:
+  # Filament diameter (usually 1.75mm or 2.85mm)
+  filament_diameter:
+    name: "Filament Diameter"
+    min: 1.0
+    max: 3.0
+    step: 0.05
+    initial: 1.75
+    unit_of_measurement: "mm"
+    icon: mdi:diameter
+    mode: box
+
+  # Spool 1
+  spool_1_initial_length:
+    name: "Spool 1 Initial Length"
+    min: 0
+    max: 1000000
+    step: 1
+    unit_of_measurement: "mm"
+    icon: mdi:ruler
+    mode: box
+
+  spool_1_used_length:
+    name: "Spool 1 Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+    icon: mdi:counter
+    mode: box
+
+  spool_1_density:
+    name: "Spool 1 Density"
+    min: 0.5
+    max: 3.0
+    step: 0.01
+    initial: 1.24
+    unit_of_measurement: "g/cm³"
+    icon: mdi:weight
+    mode: box
+
+  spool_1_initial_weight:
+    name: "Spool 1 Initial Weight"
+    min: 0
+    max: 10000
+    step: 1
+    initial: 1000
+    unit_of_measurement: "g"
+    icon: mdi:scale
+    mode: box
+
+  # Spool 2
+  spool_2_initial_length:
+    name: "Spool 2 Initial Length"
+    min: 0
+    max: 1000000
+    step: 1
+    unit_of_measurement: "mm"
+    icon: mdi:ruler
+    mode: box
+
+  spool_2_used_length:
+    name: "Spool 2 Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+    icon: mdi:counter
+    mode: box
+
+  spool_2_density:
+    name: "Spool 2 Density"
+    min: 0.5
+    max: 3.0
+    step: 0.01
+    initial: 1.24
+    unit_of_measurement: "g/cm³"
+    icon: mdi:weight
+    mode: box
+
+  spool_2_initial_weight:
+    name: "Spool 2 Initial Weight"
+    min: 0
+    max: 10000
+    step: 1
+    initial: 1000
+    unit_of_measurement: "g"
+    icon: mdi:scale
+    mode: box
+
+  # Spool 3
+  spool_3_initial_length:
+    name: "Spool 3 Initial Length"
+    min: 0
+    max: 1000000
+    step: 1
+    unit_of_measurement: "mm"
+    icon: mdi:ruler
+    mode: box
+
+  spool_3_used_length:
+    name: "Spool 3 Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+    icon: mdi:counter
+    mode: box
+
+  spool_3_density:
+    name: "Spool 3 Density"
+    min: 0.5
+    max: 3.0
+    step: 0.01
+    initial: 1.24
+    unit_of_measurement: "g/cm³"
+    icon: mdi:weight
+    mode: box
+
+  spool_3_initial_weight:
+    name: "Spool 3 Initial Weight"
+    min: 0
+    max: 10000
+    step: 1
+    initial: 1000
+    unit_of_measurement: "g"
+    icon: mdi:scale
+    mode: box
+
+  # Spool 4
+  spool_4_initial_length:
+    name: "Spool 4 Initial Length"
+    min: 0
+    max: 1000000
+    step: 1
+    unit_of_measurement: "mm"
+    icon: mdi:ruler
+    mode: box
+
+  spool_4_used_length:
+    name: "Spool 4 Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+    icon: mdi:counter
+    mode: box
+
+  spool_4_density:
+    name: "Spool 4 Density"
+    min: 0.5
+    max: 3.0
+    step: 0.01
+    initial: 1.24
+    unit_of_measurement: "g/cm³"
+    icon: mdi:weight
+    mode: box
+
+  spool_4_initial_weight:
+    name: "Spool 4 Initial Weight"
+    min: 0
+    max: 10000
+    step: 1
+    initial: 1000
+    unit_of_measurement: "g"
+    icon: mdi:scale
+    mode: box
+
+template:
+  - sensor:
+      # Active Spool Name
+      - name: "Active Spool Name"
+        unique_id: elegoo_active_spool_name
+        state: >
+          {% set active = states('input_select.active_spool') %}
+          {% if active == 'Spool 1' %}
+            {{ states('input_text.spool_1_name') }}
+          {% elif active == 'Spool 2' %}
+            {{ states('input_text.spool_2_name') }}
+          {% elif active == 'Spool 3' %}
+            {{ states('input_text.spool_3_name') %}
+          {% elif active == 'Spool 4' %}
+            {{ states('input_text.spool_4_name') %}
+          {% else %}
+            None
+          {% endif %}
+        icon: mdi:label
+
+      # Remaining Filament Length on Active Spool
+      - name: "Remaining Filament Length"
+        unique_id: elegoo_remaining_filament_length
+        unit_of_measurement: "mm"
+        device_class: distance
+        state_class: measurement
+        state: >
+          {% set active = states('input_select.active_spool') %}
+          {% if active == 'Spool 1' %}
+            {% set initial = states('input_number.spool_1_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_1_used_length') | float(0) %}
+            {{ (initial - used) | max(0) | round(2) }}
+          {% elif active == 'Spool 2' %}
+            {% set initial = states('input_number.spool_2_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_2_used_length') | float(0) %}
+            {{ (initial - used) | max(0) | round(2) }}
+          {% elif active == 'Spool 3' %}
+            {% set initial = states('input_number.spool_3_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_3_used_length') | float(0) %}
+            {{ (initial - used) | max(0) | round(2) }}
+          {% elif active == 'Spool 4' %}
+            {% set initial = states('input_number.spool_4_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_4_used_length') | float(0) %}
+            {{ (initial - used) | max(0) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:gauge
+
+      # Remaining Filament Weight on Active Spool
+      - name: "Remaining Filament Weight"
+        unique_id: elegoo_remaining_filament_weight
+        unit_of_measurement: "g"
+        device_class: weight
+        state_class: measurement
+        state: >
+          {% set active = states('input_select.active_spool') %}
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set pi = 3.14159265359 %}
+          {% if active == 'Spool 1' %}
+            {% set initial_len = states('input_number.spool_1_initial_length') | float(0) %}
+            {% set used_len = states('input_number.spool_1_used_length') | float(0) %}
+            {% set density = states('input_number.spool_1_density') | float(1.24) %}
+            {% set remaining_len = (initial_len - used_len) | max(0) %}
+            {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+          {% elif active == 'Spool 2' %}
+            {% set initial_len = states('input_number.spool_2_initial_length') | float(0) %}
+            {% set used_len = states('input_number.spool_2_used_length') | float(0) %}
+            {% set density = states('input_number.spool_2_density') | float(1.24) %}
+            {% set remaining_len = (initial_len - used_len) | max(0) %}
+            {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+          {% elif active == 'Spool 3' %}
+            {% set initial_len = states('input_number.spool_3_initial_length') | float(0) %}
+            {% set used_len = states('input_number.spool_3_used_length') | float(0) %}
+            {% set density = states('input_number.spool_3_density') | float(1.24) %}
+            {% set remaining_len = (initial_len - used_len) | max(0) %}
+            {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+          {% elif active == 'Spool 4' %}
+            {% set initial_len = states('input_number.spool_4_initial_length') | float(0) %}
+            {% set used_len = states('input_number.spool_4_used_length') | float(0) %}
+            {% set density = states('input_number.spool_4_density') | float(1.24) %}
+            {% set remaining_len = (initial_len - used_len) | max(0) %}
+            {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:scale
+
+      # Individual Spool Sensors with Weight
+      - name: "Spool 1 Remaining Length"
+        unique_id: elegoo_spool_1_remaining_length
+        unit_of_measurement: "mm"
+        device_class: distance
+        state_class: measurement
+        state: >
+          {% set initial = states('input_number.spool_1_initial_length') | float(0) %}
+          {% set used = states('input_number.spool_1_used_length') | float(0) %}
+          {{ (initial - used) | max(0) | round(2) }}
+        icon: mdi:printer-3d-nozzle
+        attributes:
+          name: "{{ states('input_text.spool_1_name') }}"
+          material: "{{ states('input_select.spool_1_material') }}"
+          initial_length: "{{ states('input_number.spool_1_initial_length') }}"
+          used_length: "{{ states('input_number.spool_1_used_length') }}"
+          density: "{{ states('input_number.spool_1_density') }}"
+          percent_remaining: >
+            {% set initial = states('input_number.spool_1_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_1_used_length') | float(0) %}
+            {% if initial > 0 %}
+              {{ (((initial - used) / initial) * 100) | round(1) }}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "Spool 1 Remaining Weight"
+        unique_id: elegoo_spool_1_remaining_weight
+        unit_of_measurement: "g"
+        device_class: weight
+        state_class: measurement
+        state: >
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set pi = 3.14159265359 %}
+          {% set initial_len = states('input_number.spool_1_initial_length') | float(0) %}
+          {% set used_len = states('input_number.spool_1_used_length') | float(0) %}
+          {% set density = states('input_number.spool_1_density') | float(1.24) %}
+          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 2 Remaining Length"
+        unique_id: elegoo_spool_2_remaining_length
+        unit_of_measurement: "mm"
+        device_class: distance
+        state_class: measurement
+        state: >
+          {% set initial = states('input_number.spool_2_initial_length') | float(0) %}
+          {% set used = states('input_number.spool_2_used_length') | float(0) %}
+          {{ (initial - used) | max(0) | round(2) }}
+        icon: mdi:printer-3d-nozzle
+        attributes:
+          name: "{{ states('input_text.spool_2_name') }}"
+          material: "{{ states('input_select.spool_2_material') }}"
+          initial_length: "{{ states('input_number.spool_2_initial_length') }}"
+          used_length: "{{ states('input_number.spool_2_used_length') }}"
+          density: "{{ states('input_number.spool_2_density') }}"
+          percent_remaining: >
+            {% set initial = states('input_number.spool_2_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_2_used_length') | float(0) %}
+            {% if initial > 0 %}
+              {{ (((initial - used) / initial) * 100) | round(1) }}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "Spool 2 Remaining Weight"
+        unique_id: elegoo_spool_2_remaining_weight
+        unit_of_measurement: "g"
+        device_class: weight
+        state_class: measurement
+        state: >
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set pi = 3.14159265359 %}
+          {% set initial_len = states('input_number.spool_2_initial_length') | float(0) %}
+          {% set used_len = states('input_number.spool_2_used_length') | float(0) %}
+          {% set density = states('input_number.spool_2_density') | float(1.24) %}
+          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 3 Remaining Length"
+        unique_id: elegoo_spool_3_remaining_length
+        unit_of_measurement: "mm"
+        device_class: distance
+        state_class: measurement
+        state: >
+          {% set initial = states('input_number.spool_3_initial_length') | float(0) %}
+          {% set used = states('input_number.spool_3_used_length') | float(0) %}
+          {{ (initial - used) | max(0) | round(2) }}
+        icon: mdi:printer-3d-nozzle
+        attributes:
+          name: "{{ states('input_text.spool_3_name') }}"
+          material: "{{ states('input_select.spool_3_material') }}"
+          initial_length: "{{ states('input_number.spool_3_initial_length') }}"
+          used_length: "{{ states('input_number.spool_3_used_length') }}"
+          density: "{{ states('input_number.spool_3_density') }}"
+          percent_remaining: >
+            {% set initial = states('input_number.spool_3_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_3_used_length') | float(0) %}
+            {% if initial > 0 %}
+              {{ (((initial - used) / initial) * 100) | round(1) }}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "Spool 3 Remaining Weight"
+        unique_id: elegoo_spool_3_remaining_weight
+        unit_of_measurement: "g"
+        device_class: weight
+        state_class: measurement
+        state: >
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set pi = 3.14159265359 %}
+          {% set initial_len = states('input_number.spool_3_initial_length') | float(0) %}
+          {% set used_len = states('input_number.spool_3_used_length') | float(0) %}
+          {% set density = states('input_number.spool_3_density') | float(1.24) %}
+          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 4 Remaining Length"
+        unique_id: elegoo_spool_4_remaining_length
+        unit_of_measurement: "mm"
+        device_class: distance
+        state_class: measurement
+        state: >
+          {% set initial = states('input_number.spool_4_initial_length') | float(0) %}
+          {% set used = states('input_number.spool_4_used_length') | float(0) %}
+          {{ (initial - used) | max(0) | round(2) }}
+        icon: mdi:printer-3d-nozzle
+        attributes:
+          name: "{{ states('input_text.spool_4_name') }}"
+          material: "{{ states('input_select.spool_4_material') }}"
+          initial_length: "{{ states('input_number.spool_4_initial_length') }}"
+          used_length: "{{ states('input_number.spool_4_used_length') }}"
+          density: "{{ states('input_number.spool_4_density') }}"
+          percent_remaining: >
+            {% set initial = states('input_number.spool_4_initial_length') | float(0) %}
+            {% set used = states('input_number.spool_4_used_length') | float(0) %}
+            {% if initial > 0 %}
+              {{ (((initial - used) / initial) * 100) | round(1) }}
+            {% else %}
+              0
+            {% endif %}
+
+      - name: "Spool 4 Remaining Weight"
+        unique_id: elegoo_spool_4_remaining_weight
+        unit_of_measurement: "g"
+        device_class: weight
+        state_class: measurement
+        state: >
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set pi = 3.14159265359 %}
+          {% set initial_len = states('input_number.spool_4_initial_length') | float(0) %}
+          {% set used_len = states('input_number.spool_4_used_length') | float(0) %}
+          {% set density = states('input_number.spool_4_density') | float(1.24) %}
+          {% set remaining_len = (initial_len - used_len) | max(0) %}
+          {{ (pi * radius * radius * remaining_len * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+automation:
+  # Auto-update density when material type changes
+  - id: elegoo_update_spool_1_density
+    alias: "Elegoo: Update Spool 1 Density from Material"
+    trigger:
+      - platform: state
+        entity_id: input_select.spool_1_material
+    action:
+      - choose:
+          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.24
+          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.27
+          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.04
+          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.21
+          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.14
+          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_density
+                data:
+                  value: 1.07
+
+  - id: elegoo_update_spool_2_density
+    alias: "Elegoo: Update Spool 2 Density from Material"
+    trigger:
+      - platform: state
+        entity_id: input_select.spool_2_material
+    action:
+      - choose:
+          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.24
+          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.27
+          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.04
+          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.21
+          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.14
+          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_density
+                data:
+                  value: 1.07
+
+  - id: elegoo_update_spool_3_density
+    alias: "Elegoo: Update Spool 3 Density from Material"
+    trigger:
+      - platform: state
+        entity_id: input_select.spool_3_material
+    action:
+      - choose:
+          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.24
+          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.27
+          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.04
+          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.21
+          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.14
+          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_density
+                data:
+                  value: 1.07
+
+  - id: elegoo_update_spool_4_density
+    alias: "Elegoo: Update Spool 4 Density from Material"
+    trigger:
+      - platform: state
+        entity_id: input_select.spool_4_material
+    action:
+      - choose:
+          - conditions: "{{ trigger.to_state.state == 'PLA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.24
+          - conditions: "{{ trigger.to_state.state == 'PETG' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.27
+          - conditions: "{{ trigger.to_state.state == 'ABS' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.04
+          - conditions: "{{ trigger.to_state.state == 'TPU' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.21
+          - conditions: "{{ trigger.to_state.state == 'Nylon' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.14
+          - conditions: "{{ trigger.to_state.state == 'ASA' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_density
+                data:
+                  value: 1.07
+
+  # Calculate initial length from weight when weight changes
+  - id: elegoo_calculate_spool_1_length_from_weight
+    alias: "Elegoo: Calculate Spool 1 Length from Weight"
+    trigger:
+      - platform: state
+        entity_id: input_number.spool_1_initial_weight
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_1_initial_length
+        data:
+          value: >
+            {% set weight = trigger.to_state.state | float(1000) %}
+            {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+            {% set radius = diameter / 2 %}
+            {% set density = states('input_number.spool_1_density') | float(1.24) %}
+            {% set pi = 3.14159265359 %}
+            {{ (weight * 1000 / (pi * radius * radius * density)) | round(0) }}
+
+  - id: elegoo_calculate_spool_2_length_from_weight
+    alias: "Elegoo: Calculate Spool 2 Length from Weight"
+    trigger:
+      - platform: state
+        entity_id: input_number.spool_2_initial_weight
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_2_initial_length
+        data:
+          value: >
+            {% set weight = trigger.to_state.state | float(1000) %}
+            {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+            {% set radius = diameter / 2 %}
+            {% set density = states('input_number.spool_2_density') | float(1.24) %}
+            {% set pi = 3.14159265359 %}
+            {{ (weight * 1000 / (pi * radius * radius * density)) | round(0) }}
+
+  - id: elegoo_calculate_spool_3_length_from_weight
+    alias: "Elegoo: Calculate Spool 3 Length from Weight"
+    trigger:
+      - platform: state
+        entity_id: input_number.spool_3_initial_weight
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_3_initial_length
+        data:
+          value: >
+            {% set weight = trigger.to_state.state | float(1000) %}
+            {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+            {% set radius = diameter / 2 %}
+            {% set density = states('input_number.spool_3_density') | float(1.24) %}
+            {% set pi = 3.14159265359 %}
+            {{ (weight * 1000 / (pi * radius * radius * density)) | round(0) }}
+
+  - id: elegoo_calculate_spool_4_length_from_weight
+    alias: "Elegoo: Calculate Spool 4 Length from Weight"
+    trigger:
+      - platform: state
+        entity_id: input_number.spool_4_initial_weight
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_4_initial_length
+        data:
+          value: >
+            {% set weight = trigger.to_state.state | float(1000) %}
+            {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+            {% set radius = diameter / 2 %}
+            {% set density = states('input_number.spool_4_density') | float(1.24) %}
+            {% set pi = 3.14159265359 %}
+            {{ (weight * 1000 / (pi * radius * radius * density)) | round(0) }}
+
+  # Track filament usage from total_extrusion sensor
+  # NOTE: Replace 'sensor.YOUR_PRINTER_total_extrusion' with your actual sensor entity ID
+  - id: elegoo_track_filament_usage
+    alias: "Elegoo: Track Filament Usage"
+    description: "Updates the used length on the active spool based on total extrusion"
+    trigger:
+      - platform: state
+        entity_id: sensor.elegoo_printer_total_extrusion  # CHANGE THIS to match your printer's entity ID
+    condition:
+      - condition: state
+        entity_id: input_boolean.spool_tracking_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('input_select.active_spool') != 'None' }}"
+    action:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_select.active_spool
+                state: "Spool 1"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_used_length
+                data:
+                  value: "{{ trigger.to_state.state | float(0) }}"
+          - conditions:
+              - condition: state
+                entity_id: input_select.active_spool
+                state: "Spool 2"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_used_length
+                data:
+                  value: "{{ trigger.to_state.state | float(0) }}"
+          - conditions:
+              - condition: state
+                entity_id: input_select.active_spool
+                state: "Spool 3"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_used_length
+                data:
+                  value: "{{ trigger.to_state.state | float(0) }}"
+          - conditions:
+              - condition: state
+                entity_id: input_select.active_spool
+                state: "Spool 4"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_used_length
+                data:
+                  value: "{{ trigger.to_state.state | float(0) }}"
+    mode: queued
+    max: 10

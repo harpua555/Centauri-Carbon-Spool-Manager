@@ -1,0 +1,117 @@
+# Spool 1 Detailed History Page
+# Copy this to create a new dashboard view in Home Assistant
+
+type: vertical-stack
+cards:
+  # Header with back button
+  - type: horizontal-stack
+    cards:
+      - type: button
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/0  # Adjust to your main dashboard path
+        name: "← Back"
+        icon: mdi:arrow-left
+      - type: markdown
+        content: |
+          ## {{ states('input_text.spool_1_name') }} History
+          **Material:** {{ states('input_select.spool_1_material') }} | **Density:** {{ states('input_number.spool_1_density') }} g/cm³
+
+  # Current Status
+  - type: entities
+    title: Current Status
+    entities:
+      - entity: input_text.spool_1_name
+        name: "Name"
+      - entity: input_select.spool_1_material
+        name: "Material Type"
+      - entity: input_number.spool_1_density
+        name: "Density"
+      - type: divider
+      - entity: input_number.spool_1_initial_length
+        name: "Initial Length"
+      - entity: input_number.spool_1_initial_weight
+        name: "Initial Weight"
+      - type: divider
+      - entity: sensor.spool_1_remaining_length
+        name: "Remaining Length"
+      - entity: sensor.spool_1_remaining_weight
+        name: "Remaining Weight"
+      - entity: input_number.spool_1_used_length
+        name: "Total Used Length"
+
+  # Last Print Info with Undo
+  - type: entities
+    title: Last Print
+    entities:
+      - entity: sensor.spool_1_last_print_length
+        name: "Last Print Length"
+        icon: mdi:ruler
+      - entity: sensor.spool_1_last_print_weight
+        name: "Last Print Weight"
+        icon: mdi:scale
+      - type: button
+        name: "🔄 Undo Last Print"
+        icon: mdi:undo
+        tap_action:
+          action: call-service
+          service: script.undo_spool_1_last_print
+          confirmation:
+            text: "Restore filament from last print?"
+
+  # Usage Statistics
+  - type: statistics-graph
+    title: "Usage Over Time"
+    entities:
+      - sensor.spool_1_remaining_length
+      - sensor.spool_1_remaining_weight
+    stat_types:
+      - mean
+      - change
+    period:
+      calendar:
+        period: month
+
+  # History Graph
+  - type: history-graph
+    title: "Filament Remaining (Last 7 Days)"
+    entities:
+      - entity: sensor.spool_1_remaining_length
+        name: Length
+      - entity: sensor.spool_1_remaining_weight
+        name: Weight
+    hours_to_show: 168  # 7 days
+
+  # Logbook History
+  - type: logbook
+    title: "Print History"
+    entities:
+      - input_number.spool_1_used_length
+    hours_to_show: 168
+
+  # Quick Actions
+  - type: entities
+    title: Quick Actions
+    entities:
+      - type: button
+        name: "Reset Spool (New Spool)"
+        icon: mdi:refresh
+        tap_action:
+          action: call-service
+          service: input_number.set_value
+          service_data:
+            entity_id: input_number.spool_1_used_length
+            value: 0
+          confirmation:
+            text: "Reset this spool to brand new?"
+      - type: button
+        name: "Mark as Empty"
+        icon: mdi:delete-empty
+        tap_action:
+          action: call-service
+          service: input_number.set_value
+          service_data:
+            entity_id: input_number.spool_1_used_length
+            value: "{{ states('input_number.spool_1_initial_length') }}"
+          confirmation:
+            text: "Mark spool as completely used?"

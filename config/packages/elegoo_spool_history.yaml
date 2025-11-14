@@ -1,0 +1,291 @@
+# Elegoo Spool Print History Tracking
+# Tracks print jobs per spool with ability to undo/restore
+
+input_text:
+  # Store last 10 print jobs per spool in JSON format
+  # Format: [{"date": "2024-01-15", "file": "test.gcode", "length": 1500, "weight": 5.5}, ...]
+  spool_1_history:
+    name: "Spool 1 Print History"
+    max: 255
+    initial: "[]"
+
+  spool_2_history:
+    name: "Spool 2 Print History"
+    max: 255
+    initial: "[]"
+
+  spool_3_history:
+    name: "Spool 3 Print History"
+    max: 255
+    initial: "[]"
+
+  spool_4_history:
+    name: "Spool 4 Print History"
+    max: 255
+    initial: "[]"
+
+  # Track current print start state
+  current_print_start_length:
+    name: "Current Print Start Length"
+    max: 50
+    initial: "0"
+
+  current_print_spool:
+    name: "Current Print Spool"
+    max: 20
+    initial: "None"
+
+input_number:
+  # Backup storage for undo functionality
+  spool_1_last_used_length:
+    name: "Spool 1 Last Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+
+  spool_2_last_used_length:
+    name: "Spool 2 Last Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+
+  spool_3_last_used_length:
+    name: "Spool 3 Last Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+
+  spool_4_last_used_length:
+    name: "Spool 4 Last Used Length"
+    min: 0
+    max: 1000000
+    step: 0.1
+    unit_of_measurement: "mm"
+
+script:
+  # Undo last print for Spool 1
+  undo_spool_1_last_print:
+    alias: "Undo Last Print (Spool 1)"
+    sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_1_used_length
+        data:
+          value: "{{ states('input_number.spool_1_last_used_length') | float(0) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Spool 1 Restored"
+          message: "Last print has been removed and filament restored to {{ states('input_text.spool_1_name') }}"
+
+  undo_spool_2_last_print:
+    alias: "Undo Last Print (Spool 2)"
+    sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_2_used_length
+        data:
+          value: "{{ states('input_number.spool_2_last_used_length') | float(0) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Spool 2 Restored"
+          message: "Last print has been removed and filament restored to {{ states('input_text.spool_2_name') }}"
+
+  undo_spool_3_last_print:
+    alias: "Undo Last Print (Spool 3)"
+    sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_3_used_length
+        data:
+          value: "{{ states('input_number.spool_3_last_used_length') | float(0) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Spool 3 Restored"
+          message: "Last print has been removed and filament restored to {{ states('input_text.spool_3_name') }}"
+
+  undo_spool_4_last_print:
+    alias: "Undo Last Print (Spool 4)"
+    sequence:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.spool_4_used_length
+        data:
+          value: "{{ states('input_number.spool_4_last_used_length') | float(0) }}"
+      - service: persistent_notification.create
+        data:
+          title: "Spool 4 Restored"
+          message: "Last print has been removed and filament restored to {{ states('input_text.spool_4_name') }}"
+
+automation:
+  # Track print start
+  - id: elegoo_track_print_start
+    alias: "Elegoo: Track Print Start"
+    trigger:
+      - platform: state
+        entity_id: sensor.elegoo_printer_print_status  # Adjust to your status sensor
+        to: "printing"
+    condition:
+      - condition: template
+        value_template: "{{ states('input_select.active_spool') != 'None' }}"
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.current_print_spool
+        data:
+          value: "{{ states('input_select.active_spool') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.current_print_start_length
+        data:
+          value: >
+            {% set spool = states('input_select.active_spool') %}
+            {% if spool == 'Spool 1' %}
+              {{ states('input_number.spool_1_used_length') }}
+            {% elif spool == 'Spool 2' %}
+              {{ states('input_number.spool_2_used_length') }}
+            {% elif spool == 'Spool 3' %}
+              {{ states('input_number.spool_3_used_length') }}
+            {% elif spool == 'Spool 4' %}
+              {{ states('input_number.spool_4_used_length') }}
+            {% else %}
+              0
+            {% endif %}
+
+  # Track print completion and log to history
+  - id: elegoo_log_print_completion
+    alias: "Elegoo: Log Print Completion"
+    trigger:
+      - platform: state
+        entity_id: sensor.elegoo_printer_print_status  # Adjust to your status sensor
+        to: "complete"
+    condition:
+      - condition: template
+        value_template: "{{ states('input_text.current_print_spool') != 'None' }}"
+    action:
+      - service: logbook.log
+        data:
+          name: "Print Completed"
+          message: >
+            Completed print on {{ states('input_text.current_print_spool') }}
+            ({{ states('sensor.elegoo_printer_file_name') | default('Unknown') }})
+          entity_id: "{{ 'input_select.active_spool' }}"
+      # Backup current used length for undo
+      - choose:
+          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 1' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_1_last_used_length
+                data:
+                  value: "{{ states('input_text.current_print_start_length') | float(0) }}"
+          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 2' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_2_last_used_length
+                data:
+                  value: "{{ states('input_text.current_print_start_length') | float(0) }}"
+          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 3' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_3_last_used_length
+                data:
+                  value: "{{ states('input_text.current_print_start_length') | float(0) }}"
+          - conditions: "{{ states('input_text.current_print_spool') == 'Spool 4' }}"
+            sequence:
+              - service: input_number.set_value
+                target:
+                  entity_id: input_number.spool_4_last_used_length
+                data:
+                  value: "{{ states('input_text.current_print_start_length') | float(0) }}"
+
+template:
+  - sensor:
+      # Last print info for each spool
+      - name: "Spool 1 Last Print Length"
+        unique_id: elegoo_spool_1_last_print_length
+        unit_of_measurement: "mm"
+        state: >
+          {% set current = states('input_number.spool_1_used_length') | float(0) %}
+          {% set last = states('input_number.spool_1_last_used_length') | float(0) %}
+          {{ (current - last) | round(2) }}
+        icon: mdi:printer-3d
+
+      - name: "Spool 1 Last Print Weight"
+        unique_id: elegoo_spool_1_last_print_weight
+        unit_of_measurement: "g"
+        state: >
+          {% set length = states('sensor.spool_1_last_print_length') | float(0) %}
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set density = states('input_number.spool_1_density') | float(1.24) %}
+          {% set pi = 3.14159265359 %}
+          {{ (pi * radius * radius * length * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 2 Last Print Length"
+        unique_id: elegoo_spool_2_last_print_length
+        unit_of_measurement: "mm"
+        state: >
+          {% set current = states('input_number.spool_2_used_length') | float(0) %}
+          {% set last = states('input_number.spool_2_last_used_length') | float(0) %}
+          {{ (current - last) | round(2) }}
+        icon: mdi:printer-3d
+
+      - name: "Spool 2 Last Print Weight"
+        unique_id: elegoo_spool_2_last_print_weight
+        unit_of_measurement: "g"
+        state: >
+          {% set length = states('sensor.spool_2_last_print_length') | float(0) %}
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set density = states('input_number.spool_2_density') | float(1.24) %}
+          {% set pi = 3.14159265359 %}
+          {{ (pi * radius * radius * length * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 3 Last Print Length"
+        unique_id: elegoo_spool_3_last_print_length
+        unit_of_measurement: "mm"
+        state: >
+          {% set current = states('input_number.spool_3_used_length') | float(0) %}
+          {% set last = states('input_number.spool_3_last_used_length') | float(0) %}
+          {{ (current - last) | round(2) }}
+        icon: mdi:printer-3d
+
+      - name: "Spool 3 Last Print Weight"
+        unique_id: elegoo_spool_3_last_print_weight
+        unit_of_measurement: "g"
+        state: >
+          {% set length = states('sensor.spool_3_last_print_length') | float(0) %}
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set density = states('input_number.spool_3_density') | float(1.24) %}
+          {% set pi = 3.14159265359 %}
+          {{ (pi * radius * radius * length * density / 1000) | round(2) }}
+        icon: mdi:scale
+
+      - name: "Spool 4 Last Print Length"
+        unique_id: elegoo_spool_4_last_print_length
+        unit_of_measurement: "mm"
+        state: >
+          {% set current = states('input_number.spool_4_used_length') | float(0) %}
+          {% set last = states('input_number.spool_4_last_used_length') | float(0) %}
+          {{ (current - last) | round(2) }}
+        icon: mdi:printer-3d
+
+      - name: "Spool 4 Last Print Weight"
+        unique_id: elegoo_spool_4_last_print_weight
+        unit_of_measurement: "g"
+        state: >
+          {% set length = states('sensor.spool_4_last_print_length') | float(0) %}
+          {% set diameter = states('input_number.filament_diameter') | float(1.75) %}
+          {% set radius = diameter / 2 %}
+          {% set density = states('input_number.spool_4_density') | float(1.24) %}
+          {% set pi = 3.14159265359 %}
+          {{ (pi * radius * radius * length * density / 1000) | round(2) }}
+        icon: mdi:scale

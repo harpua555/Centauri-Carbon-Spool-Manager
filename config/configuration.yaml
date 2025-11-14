@@ -1,6 +1,7 @@
 # https://www.home-assistant.io/integrations/homeassistant/
 homeassistant:
   debug: true
+  packages: !include_dir_named packages
 
 # https://www.home-assistant.io/integrations/logger/
 logger:

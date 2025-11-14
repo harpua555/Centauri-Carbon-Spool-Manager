@@ -1,0 +1,133 @@
+# Elegoo Filament Spool Manager Dashboard Card
+# Copy this configuration into your Lovelace dashboard
+# Go to: Settings -> Dashboards -> [Your Dashboard] -> Edit -> Add Card -> Manual YAML
+
+type: vertical-stack
+cards:
+  # Header Card
+  - type: markdown
+    content: |
+      ## 🎨 Filament Spool Manager
+      Track and manage your 3D printer filament spools
+
+  # Active Spool Selection
+  - type: entities
+    title: Active Spool
+    entities:
+      - entity: input_select.active_spool
+        name: Select Active Spool
+      - entity: sensor.active_spool_name
+        name: Current Spool Name
+      - entity: sensor.remaining_filament
+        name: Remaining Filament
+      - entity: input_boolean.spool_tracking_enabled
+        name: Enable Tracking
+
+  # Remaining Filament Gauge
+  - type: gauge
+    entity: sensor.remaining_filament
+    name: Remaining Filament
+    unit: mm
+    min: 0
+    max: 100000
+    severity:
+      green: 50000
+      yellow: 20000
+      red: 0
+    needle: true
+
+  # Spool 1 Configuration
+  - type: entities
+    title: "{{ states('input_text.spool_1_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_1_name
+        name: Spool Name
+      - entity: input_number.spool_1_initial_length
+        name: Initial Length (mm)
+      - entity: input_number.spool_1_used_length
+        name: Used Length (mm)
+      - entity: sensor.spool_1_remaining
+        name: Remaining
+        type: custom:bar-card
+        severity:
+          - color: red
+            from: 0
+            to: 20
+          - color: yellow
+            from: 20
+            to: 50
+          - color: green
+            from: 50
+            to: 100
+        positions:
+          icon: outside
+          indicator: inside
+          name: inside
+        unit_of_measurement: "%"
+        entity_config:
+          sensor.spool_1_remaining:
+            name: "{{ states('input_text.spool_1_name') }}"
+            value: "{{ state_attr('sensor.spool_1_remaining', 'percent_remaining') }}"
+
+  # Spool 2 Configuration
+  - type: entities
+    title: "{{ states('input_text.spool_2_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_2_name
+        name: Spool Name
+      - entity: input_number.spool_2_initial_length
+        name: Initial Length (mm)
+      - entity: input_number.spool_2_used_length
+        name: Used Length (mm)
+      - entity: sensor.spool_2_remaining
+        name: Remaining
+
+  # Spool 3 Configuration
+  - type: entities
+    title: "{{ states('input_text.spool_3_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_3_name
+        name: Spool Name
+      - entity: input_number.spool_3_initial_length
+        name: Initial Length (mm)
+      - entity: input_number.spool_3_used_length
+        name: Used Length (mm)
+      - entity: sensor.spool_3_remaining
+        name: Remaining
+
+  # Spool 4 Configuration
+  - type: entities
+    title: "{{ states('input_text.spool_4_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_4_name
+        name: Spool Name
+      - entity: input_number.spool_4_initial_length
+        name: Initial Length (mm)
+      - entity: input_number.spool_4_used_length
+        name: Used Length (mm)
+      - entity: sensor.spool_4_remaining
+        name: Remaining
+
+  # Quick Stats
+  - type: horizontal-stack
+    cards:
+      - type: statistic
+        entity: sensor.spool_1_remaining
+        name: "{{ states('input_text.spool_1_name') }}"
+        stat_type: mean
+      - type: statistic
+        entity: sensor.spool_2_remaining
+        name: "{{ states('input_text.spool_2_name') }}"
+        stat_type: mean
+      - type: statistic
+        entity: sensor.spool_3_remaining
+        name: "{{ states('input_text.spool_3_name') }}"
+        stat_type: mean
+      - type: statistic
+        entity: sensor.spool_4_remaining
+        name: "{{ states('input_text.spool_4_name') }}"
+        stat_type: mean

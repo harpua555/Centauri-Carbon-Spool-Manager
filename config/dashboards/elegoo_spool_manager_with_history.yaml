@@ -1,0 +1,256 @@
+# Elegoo Filament Spool Manager Dashboard Card with History Links
+# This version includes navigation to detailed history pages
+# Copy this configuration into your Lovelace dashboard
+
+type: vertical-stack
+cards:
+  # Header Card
+  - type: markdown
+    content: |
+      ## 🎨 Filament Spool Manager
+      Track and manage your 3D printer filament spools with weight & history tracking
+
+  # Active Spool Control Panel
+  - type: entities
+    title: Active Spool Control
+    state_color: true
+    entities:
+      - entity: input_boolean.spool_tracking_enabled
+        name: "🔄 Enable Tracking"
+      - entity: input_select.active_spool
+        name: "📍 Active Spool"
+      - entity: input_number.filament_diameter
+        name: "⚙️ Filament Diameter"
+      - type: divider
+      - entity: sensor.active_spool_name
+        name: "🏷️ Current Spool"
+        icon: mdi:label
+      - entity: sensor.remaining_filament_length
+        name: "📏 Remaining Length"
+        icon: mdi:ruler
+      - entity: sensor.remaining_filament_weight
+        name: "⚖️ Remaining Weight"
+        icon: mdi:scale
+
+  # Remaining Filament Gauges
+  - type: horizontal-stack
+    cards:
+      - type: gauge
+        entity: sensor.remaining_filament_length
+        name: Length
+        unit: mm
+        min: 0
+        max: 350000
+        severity:
+          green: 150000
+          yellow: 75000
+          red: 0
+        needle: true
+      - type: gauge
+        entity: sensor.remaining_filament_weight
+        name: Weight
+        unit: g
+        min: 0
+        max: 1200
+        severity:
+          green: 500
+          yellow: 250
+          red: 0
+        needle: true
+
+  # All Spools Quick View with History Buttons
+  - type: entities
+    title: All Spools Quick View
+    state_color: true
+    entities:
+      - type: custom:fold-entity-row
+        head:
+          entity: sensor.spool_1_remaining_length
+          name: "{{ states('input_text.spool_1_name') }}"
+          secondary_info: "{{ states('sensor.spool_1_remaining_weight') }}g remaining"
+        entities:
+          - entity: sensor.spool_1_last_print_length
+            name: "Last Print Length"
+          - entity: sensor.spool_1_last_print_weight
+            name: "Last Print Weight"
+          - type: button
+            name: "🔄 Undo Last Print"
+            action_name: Undo
+            tap_action:
+              action: call-service
+              service: script.undo_spool_1_last_print
+              confirmation:
+                text: "Restore filament from last print?"
+          - type: button
+            name: "📜 View Full History"
+            icon: mdi:history
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-spool1  # Create this view in your dashboard
+
+      - type: custom:fold-entity-row
+        head:
+          entity: sensor.spool_2_remaining_length
+          name: "{{ states('input_text.spool_2_name') }}"
+          secondary_info: "{{ states('sensor.spool_2_remaining_weight') }}g remaining"
+        entities:
+          - entity: sensor.spool_2_last_print_length
+            name: "Last Print Length"
+          - entity: sensor.spool_2_last_print_weight
+            name: "Last Print Weight"
+          - type: button
+            name: "🔄 Undo Last Print"
+            action_name: Undo
+            tap_action:
+              action: call-service
+              service: script.undo_spool_2_last_print
+              confirmation:
+                text: "Restore filament from last print?"
+          - type: button
+            name: "📜 View Full History"
+            icon: mdi:history
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-spool2
+
+      - type: custom:fold-entity-row
+        head:
+          entity: sensor.spool_3_remaining_length
+          name: "{{ states('input_text.spool_3_name') }}"
+          secondary_info: "{{ states('sensor.spool_3_remaining_weight') }}g remaining"
+        entities:
+          - entity: sensor.spool_3_last_print_length
+            name: "Last Print Length"
+          - entity: sensor.spool_3_last_print_weight
+            name: "Last Print Weight"
+          - type: button
+            name: "🔄 Undo Last Print"
+            action_name: Undo
+            tap_action:
+              action: call-service
+              service: script.undo_spool_3_last_print
+              confirmation:
+                text: "Restore filament from last print?"
+          - type: button
+            name: "📜 View Full History"
+            icon: mdi:history
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-spool3
+
+      - type: custom:fold-entity-row
+        head:
+          entity: sensor.spool_4_remaining_length
+          name: "{{ states('input_text.spool_4_name') }}"
+          secondary_info: "{{ states('sensor.spool_4_remaining_weight') }}g remaining"
+        entities:
+          - entity: sensor.spool_4_last_print_length
+            name: "Last Print Length"
+          - entity: sensor.spool_4_last_print_weight
+            name: "Last Print Weight"
+          - type: button
+            name: "🔄 Undo Last Print"
+            action_name: Undo
+            tap_action:
+              action: call-service
+              service: script.undo_spool_4_last_print
+              confirmation:
+                text: "Restore filament from last print?"
+          - type: button
+            name: "📜 View Full History"
+            icon: mdi:history
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-spool4
+
+  # Spool 1 Configuration
+  - type: entities
+    title: "Spool 1: {{ states('input_text.spool_1_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_1_name
+        name: "✏️ Name"
+      - entity: input_select.spool_1_material
+        name: "🧪 Material"
+      - entity: input_number.spool_1_density
+        name: "⚗️ Density"
+      - entity: input_number.spool_1_initial_weight
+        name: "📦 Initial Weight (sets length)"
+      - entity: input_number.spool_1_initial_length
+        name: "📏 Initial Length"
+      - entity: input_number.spool_1_used_length
+        name: "🔄 Used Length"
+      - type: divider
+      - entity: sensor.spool_1_remaining_length
+        name: "📊 Remaining Length"
+      - entity: sensor.spool_1_remaining_weight
+        name: "⚖️ Remaining Weight"
+
+  # Spool 2 Configuration
+  - type: entities
+    title: "Spool 2: {{ states('input_text.spool_2_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_2_name
+        name: "✏️ Name"
+      - entity: input_select.spool_2_material
+        name: "🧪 Material"
+      - entity: input_number.spool_2_density
+        name: "⚗️ Density"
+      - entity: input_number.spool_2_initial_weight
+        name: "📦 Initial Weight (sets length)"
+      - entity: input_number.spool_2_initial_length
+        name: "📏 Initial Length"
+      - entity: input_number.spool_2_used_length
+        name: "🔄 Used Length"
+      - type: divider
+      - entity: sensor.spool_2_remaining_length
+        name: "📊 Remaining Length"
+      - entity: sensor.spool_2_remaining_weight
+        name: "⚖️ Remaining Weight"
+
+  # Spool 3 Configuration
+  - type: entities
+    title: "Spool 3: {{ states('input_text.spool_3_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_3_name
+        name: "✏️ Name"
+      - entity: input_select.spool_3_material
+        name: "🧪 Material"
+      - entity: input_number.spool_3_density
+        name: "⚗️ Density"
+      - entity: input_number.spool_3_initial_weight
+        name: "📦 Initial Weight (sets length)"
+      - entity: input_number.spool_3_initial_length
+        name: "📏 Initial Length"
+      - entity: input_number.spool_3_used_length
+        name: "🔄 Used Length"
+      - type: divider
+      - entity: sensor.spool_3_remaining_length
+        name: "📊 Remaining Length"
+      - entity: sensor.spool_3_remaining_weight
+        name: "⚖️ Remaining Weight"
+
+  # Spool 4 Configuration
+  - type: entities
+    title: "Spool 4: {{ states('input_text.spool_4_name') }}"
+    state_color: true
+    entities:
+      - entity: input_text.spool_4_name
+        name: "✏️ Name"
+      - entity: input_select.spool_4_material
+        name: "🧪 Material"
+      - entity: input_number.spool_4_density
+        name: "⚗️ Density"
+      - entity: input_number.spool_4_initial_weight
+        name: "📦 Initial Weight (sets length)"
+      - entity: input_number.spool_4_initial_length
+        name: "📏 Initial Length"
+      - entity: input_number.spool_4_used_length
+        name: "🔄 Used Length"
+      - type: divider
+      - entity: sensor.spool_4_remaining_length
+        name: "📊 Remaining Length"
+      - entity: sensor.spool_4_remaining_weight
+        name: "⚖️ Remaining Weight"
