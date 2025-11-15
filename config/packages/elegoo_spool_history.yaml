@@ -236,7 +236,20 @@ automation:
           message: >
             Completed print on {{ states('input_text.current_print_spool') }}
             ({{ states('sensor.centauri_carbon_file_name') | default('Unknown') }})
-          entity_id: "{{ 'input_select.active_spool' }}"
+            Used: {{ states('input_text.current_print_extrusion') | float(0) | round(2) }} mm
+          entity_id: >
+            {% set spool = states('input_text.current_print_spool') %}
+            {% if spool == 'Spool 1' %}
+              input_number.spool_1_used_length
+            {% elif spool == 'Spool 2' %}
+              input_number.spool_2_used_length
+            {% elif spool == 'Spool 3' %}
+              input_number.spool_3_used_length
+            {% elif spool == 'Spool 4' %}
+              input_number.spool_4_used_length
+            {% else %}
+              input_select.active_spool
+            {% endif %}
       # Backup current used length for undo
       - choose:
           - conditions:
