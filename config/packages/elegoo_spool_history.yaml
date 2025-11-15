@@ -186,9 +186,18 @@ automation:
     alias: "Elegoo: Log Print Completion"
     trigger:
       - platform: state
-        entity_id: sensor.centauri_carbon_print_status
+        entity_id: sensor.centauri_carbon_current_status
         from: "printing"
-        to: "idle"
+        to:
+          - "idle"
+          - "stopping"
+          - "stopped"
+      - platform: state
+        entity_id: sensor.centauri_carbon_current_status
+        from: "printing"
+        to: "unavailable"
+        for:
+          seconds: 20
     condition:
       - condition: template
         value_template: "{{ states('input_text.current_print_spool') != 'None' }}"

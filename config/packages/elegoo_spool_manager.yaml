@@ -844,9 +844,18 @@ automation:
     description: "Adds the total extrusion from the completed print to the active spool's used length"
     trigger:
       - platform: state
-        entity_id: sensor.centauri_carbon_print_status
+        entity_id: sensor.centauri_carbon_current_status
         from: "printing"
-        to: "idle"
+        to:
+          - "idle"
+          - "stopping"
+          - "stopped"
+      - platform: state
+        entity_id: sensor.centauri_carbon_current_status
+        from: "printing"
+        to: "unavailable"
+        for:
+          seconds: 20
     condition:
       - condition: state
         entity_id: input_boolean.spool_tracking_enabled
