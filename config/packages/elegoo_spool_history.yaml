@@ -170,16 +170,44 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.centauri_carbon_total_extrusion
+        id: "continuous"
+      - platform: state
+        entity_id: sensor.centauri_carbon_current_status
+        from: "printing"
+        to:
+          - "idle"
+          - "stopping"
+          - "stopped"
+        id: "final"
+      - platform: state
+        entity_id: sensor.centauri_carbon_current_status
+        from: "printing"
+        to: "unavailable"
+        for:
+          seconds: 20
+        id: "final"
     condition:
-      - condition: state
-        entity_id: sensor.centauri_carbon_print_status
-        state: "printing"
+      - condition: or
+        conditions:
+          - condition: and
+            conditions:
+              - condition: trigger
+                id: "continuous"
+              - condition: state
+                entity_id: sensor.centauri_carbon_print_status
+                state: "printing"
+          - condition: trigger
+            id: "final"
     action:
       - service: input_text.set_value
         target:
           entity_id: input_text.current_print_extrusion
         data:
-          value: "{{ trigger.to_state.state }}"
+          value: "{{ states('sensor.centauri_carbon_total_extrusion') }}"
+      - condition: trigger
+        id: "continuous"
+      - delay:
+          seconds: 60
 
   # Track print completion and log to history
   - id: elegoo_log_print_completion
