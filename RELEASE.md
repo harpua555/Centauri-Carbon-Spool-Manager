@@ -1,60 +1,55 @@
-# Release Guide for Standalone Spool Manager
+# Release Guide
 
 ## Creating a New Release
 
-When you're ready to release a new version of the standalone spool manager:
-
-### 1. Make sure you're on the standalone branch with all changes committed
+### 1. Ensure all changes are committed
 
 ```bash
-git checkout standalone
 git status  # Should show clean working tree
 ```
 
 ### 2. Create and push a tag
 
 ```bash
-# Create a tag (e.g., spool-v1.0.0, spool-v1.1.0, etc.)
-git tag -a spool-v1.0.0 -m "Release version 1.0.0 of standalone spool manager"
+# Create a tag (e.g., v1.0.0, v1.1.0, etc.)
+git tag -a v1.0.0 -m "Release version 1.0.0"
 
 # Push the tag to GitHub
-git push origin spool-v1.0.0
+git push origin v1.0.0
 ```
 
 ### 3. GitHub Actions will automatically:
 
-- Create a release ZIP file containing:
+- Create a ZIP file `centauri-carbon-spool-manager.zip` containing:
   - All package files
   - All dashboard files
-  - Documentation (README, guides)
+  - Documentation
   - Installation script
 
 - Create a GitHub Release with:
   - Release notes
-  - Download link for the ZIP
+  - Download link
   - Installation instructions
 
-### 4. The release will be available at:
+### 4. Release will be available at:
 
-`https://github.com/danielcherubini/elegoo-homeassistant/releases`
+`https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/releases`
 
 ## Tag Naming Convention
 
-Use the format `spool-v<MAJOR>.<MINOR>.<PATCH>`:
+Use semantic versioning: `v<MAJOR>.<MINOR>.<PATCH>`
 
-- **MAJOR**: Breaking changes or major new features (e.g., spool-v2.0.0)
-- **MINOR**: New features, backwards compatible (e.g., spool-v1.1.0)
-- **PATCH**: Bug fixes, small improvements (e.g., spool-v1.0.1)
+- **MAJOR**: Breaking changes (e.g., v2.0.0)
+- **MINOR**: New features, backwards compatible (e.g., v1.1.0)
+- **PATCH**: Bug fixes (e.g., v1.0.1)
 
 Examples:
-- `spool-v1.0.0` - Initial release
-- `spool-v1.0.1` - Bug fix
-- `spool-v1.1.0` - Added new material densities
-- `spool-v2.0.0` - Breaking changes to entity names
+- `v1.0.0` - Initial release
+- `v1.0.1` - Bug fix for history logging
+- `v1.1.0` - Add new material type (ASA)
+- `v2.0.0` - Breaking change to entity names
 
 ## Manual Release (Without GitHub Actions)
-
-If you prefer to create releases manually:
 
 ```bash
 # Create release directory
@@ -67,47 +62,27 @@ cp config/lovelace-spool-manager.yaml release/config/
 cp README.md SPOOL_MANAGER.md SPOOL_HISTORY_GUIDE.md LICENSE release/
 
 # Create ZIP
-cd release && zip -r ../elegoo-spool-manager-standalone.zip . && cd ..
-
-# Upload to GitHub Releases manually
+cd release && zip -r ../centauri-carbon-spool-manager.zip . && cd ..
 ```
 
-## Updating the Main Integration
-
-To merge spool manager changes back to the main dev branch:
-
-```bash
-# Switch to dev
-git checkout dev
-
-# Merge specific files from standalone
-git checkout standalone -- config/packages/elegoo_spool_manager.yaml
-git checkout standalone -- config/packages/elegoo_spool_history.yaml
-git checkout standalone -- config/dashboards/
-git checkout standalone -- config/lovelace-spool-manager.yaml
-git checkout standalone -- SPOOL_MANAGER.md
-git checkout standalone -- SPOOL_HISTORY_GUIDE.md
-
-# Commit the updates
-git commit -m "Update spool manager from standalone branch"
-```
+Then upload to GitHub Releases manually.
 
 ## Troubleshooting
 
 ### GitHub Actions not triggering
 
-- Verify the tag format matches `spool-v*`
-- Check that you pushed the tag: `git push origin <tag-name>`
-- Look at the Actions tab on GitHub for error messages
+- Verify tag format matches `v*` (e.g., v1.0.0)
+- Check that you pushed the tag: `git push origin v1.0.0`
+- Look at Actions tab on GitHub for error messages
 
 ### Release ZIP missing files
 
 - Check `.github/workflows/release-standalone.yml`
 - Verify file paths are correct
-- Run the workflow manually from the Actions tab
+- Test locally by running the archive commands
 
 ### Users reporting installation issues
 
 1. Test the installation script yourself
 2. Update README.md with clearer instructions
-3. Create an issue template for installation problems
+3. Check GitHub Issues for common problems

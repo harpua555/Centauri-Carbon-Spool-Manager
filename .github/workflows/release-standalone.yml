@@ -1,18 +1,16 @@
-name: Create Standalone Release
+name: Create Release
 
 on:
   push:
     tags:
-      - 'spool-v*'  # Trigger on tags like spool-v1.0.0
+      - 'v*'  # Trigger on tags like v1.0.0
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout standalone branch
+      - name: Checkout main branch
         uses: actions/checkout@v4
-        with:
-          ref: standalone
 
       - name: Create release archive
         run: |
@@ -40,10 +38,10 @@ jobs:
           # Create installation script
           cat > release/install.sh << 'EOF'
           #!/bin/bash
-          # Elegoo Spool Manager Installation Script
+          # Centauri Carbon Spool Manager Installation Script
 
-          echo "Elegoo Spool Manager Installer"
-          echo "================================"
+          echo "Centauri Carbon Spool Manager Installer"
+          echo "========================================"
           echo ""
 
           # Detect Home Assistant config directory
@@ -117,25 +115,25 @@ jobs:
 
           # Create ZIP archive
           cd release
-          zip -r ../elegoo-spool-manager-standalone.zip .
+          zip -r ../centauri-carbon-spool-manager.zip .
           cd ..
 
       - name: Extract version from tag
         id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/spool-v}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Spool Manager v${{ steps.version.outputs.VERSION }}
+          name: Centauri Carbon Spool Manager v${{ steps.version.outputs.VERSION }}
           body: |
-            # Elegoo Filament Spool Manager (Standalone) v${{ steps.version.outputs.VERSION }}
+            # Centauri Carbon Spool Manager v${{ steps.version.outputs.VERSION }}
 
-            Track and manage your 3D printer filament spools with automatic usage tracking.
+            Automatic filament tracking for your Elegoo Centauri Carbon (and other FDM printers).
 
             ## Installation
 
-            1. Download `elegoo-spool-manager-standalone.zip`
+            1. Download `centauri-carbon-spool-manager.zip`
             2. Extract the archive
             3. Run `./install.sh` or manually copy files to your Home Assistant config
             4. See `README.md` for detailed setup instructions
@@ -144,18 +142,28 @@ jobs:
 
             - Home Assistant instance
             - [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) already installed
-            - Elegoo FDM printer with extrusion sensor
+            - Elegoo FDM printer with extrusion sensor (Centauri Carbon, Neptune 4, etc.)
 
             ## What's Included
 
-            - Spool manager package files
-            - Print history tracking
-            - Multiple dashboard options
-            - Complete documentation
+            - Spool manager package files (4 spools with material/density support)
+            - Print history tracking with undo functionality
+            - Multiple dashboard options (full, simple, with history)
+            - Complete documentation and guides
+            - Installation script for easy setup
 
-            For detailed features and setup, see the included README.md
+            ## Features
+
+            - Real-time extrusion tracking
+            - Weight and length calculations
+            - Material density profiles
+            - Print history logging
+            - Undo last print
+            - Multiple dashboard views
+
+            For complete features and setup instructions, see README.md
           files: |
-            elegoo-spool-manager-standalone.zip
+            centauri-carbon-spool-manager.zip
           draft: false
           prerelease: false
         env:

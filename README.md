@@ -1,72 +1,66 @@
-# Elegoo Printer Filament Spool Manager (Standalone)
+# Centauri Carbon Spool Manager
 
-**Track and manage your 3D printer filament spools with automatic usage tracking**
+**Automatic filament tracking for your Elegoo Centauri Carbon (and other FDM printers)**
 
-This is a standalone filament spool management system for Home Assistant that works with the [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant). It provides automatic filament usage tracking based on extrusion data from your Elegoo FDM printer.
+Track and manage your 3D printer filament spools with automatic usage tracking based on real-time extrusion data from your printer. Works with any Elegoo FDM printer that provides extrusion sensors through the [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant).
 
 ## Prerequisites
 
 - Home Assistant instance
 - [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) already installed and configured
-- Elegoo FDM printer (e.g., Neptune 4, OrangeStorm Giga, Centauri Carbon)
+- Elegoo FDM printer with extrusion sensor (Centauri Carbon, Neptune 4, OrangeStorm Giga, etc.)
 
 ## Features
 
-- **4 Spool Tracking** - Track up to 4 different filament spools
-- **Material & Density** - Configure material type and density for accurate weight calculations
-- **Automatic Usage Tracking** - Automatically tracks filament usage during prints using extrusion data
-- **Weight & Length Display** - View remaining filament in both mm and grams
-- **Print History** - Log every print with filament usage details
-- **Undo Last Print** - Made a mistake? Restore filament from the last print
-- **Multiple Dashboards** - Choose from simple, detailed, or history-focused views
+- **4 Spool Tracking** - Manage up to 4 different filament spools simultaneously
+- **Material & Density Profiles** - Built-in profiles for PLA, PETG, ABS, TPU, Nylon, and PC
+- **Automatic Usage Tracking** - Real-time tracking using extrusion data from your printer
+- **Dual Unit Display** - View remaining filament in both length (mm) and weight (grams)
+- **Print History** - Complete log of every print with detailed filament usage
+- **Undo Last Print** - Accidentally logged a failed print? Restore filament with one click
+- **Multiple Dashboard Options** - Choose from simple, detailed, or history-focused views
 - **Persistent Storage** - All data survives Home Assistant restarts
+- **Weight-Based Setup** - Enter spool weight, length is calculated automatically
 
 ## Installation
 
-You have several options to install the spool manager:
+### Method 1: Download ZIP (Recommended)
 
-### Method 1: Download ZIP (Easiest)
-
-1. **Download** the latest release ZIP from GitHub:
-   - Go to [Releases](https://github.com/danielcherubini/elegoo-homeassistant/releases)
-   - Download `elegoo-spool-manager-standalone.zip`
+1. **Download** the latest release:
+   - Go to [Releases](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/releases)
+   - Download `centauri-carbon-spool-manager.zip`
 
 2. **Extract** the ZIP file
 
-3. **Copy files** to your Home Assistant:
+3. **Copy files** to Home Assistant:
    ```bash
-   # Copy both package files to your packages directory
+   # Copy both package files
    cp config/packages/elegoo_spool_manager.yaml /config/packages/
    cp config/packages/elegoo_spool_history.yaml /config/packages/
 
-   # Copy dashboard (choose your preferred option below)
+   # Copy your preferred dashboard
    cp config/lovelace-spool-manager.yaml /config/
    ```
 
 ### Method 2: Git Clone
 
-Clone just the standalone branch:
-
 ```bash
-# Clone only the standalone branch
-git clone -b standalone --single-branch https://github.com/danielcherubini/elegoo-homeassistant.git elegoo-spool-manager
+git clone https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager.git
 
 # Copy files to Home Assistant
-cp elegoo-spool-manager/config/packages/*.yaml /config/packages/
-cp elegoo-spool-manager/config/lovelace-spool-manager.yaml /config/
+cp centauri-carbon-spool-manager/config/packages/*.yaml /config/packages/
+cp centauri-carbon-spool-manager/config/lovelace-spool-manager.yaml /config/
 ```
 
-### Method 3: Manual File Copy
+### Method 3: Direct File Download
 
-Copy individual files directly from GitHub:
+1. Browse to [this repository](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager)
+2. Navigate to each file under `config/packages/` and `config/`
+3. Click "Raw" and save to your Home Assistant config directory
 
-1. Browse to the [standalone branch](https://github.com/danielcherubini/elegoo-homeassistant/tree/standalone)
-2. Navigate to each file and click "Raw"
-3. Save the file to your `/config/packages/` or `/config/dashboards/` directory
+## Setup
 
-## Setup After Installation
-
-### 1. Enable Packages in Configuration
+### 1. Enable Packages
 
 Add this to your `configuration.yaml` if not already present:
 
@@ -75,12 +69,13 @@ homeassistant:
   packages: !include_dir_named packages
 ```
 
-### 2. Choose and Install Dashboard
+### 2. Install Dashboard
 
-Pick one of the dashboard options:
+Choose one of these options:
 
 #### Option A: Full Dashboard (Recommended)
-Copy the complete dashboard with history views:
+
+Copy the complete dashboard:
 ```bash
 cp config/lovelace-spool-manager.yaml /config/
 ```
@@ -99,141 +94,153 @@ lovelace:
 ```
 
 #### Option B: Simple Card
-Copy just the simple card to add to an existing dashboard:
+
+For existing dashboards:
 ```bash
 cp config/dashboards/elegoo_spool_manager_simple.yaml /config/dashboards/
 ```
+Then add manually via UI: Settings → Dashboards → Edit → Add Card → Manual YAML
 
-Then add the card manually to your dashboard via the UI.
+#### Option C: Card with History
 
-#### Option C: Card with History Links
-For a collapsible card with history buttons:
+Collapsible card with history navigation:
 ```bash
 cp config/dashboards/elegoo_spool_manager_with_history.yaml /config/dashboards/
 ```
 
 ### 3. Restart Home Assistant
 
-Restart Home Assistant to load the new configuration.
-
 ## Configuration
 
 ### Initial Setup
 
-1. Navigate to the Spool Manager dashboard
-2. For each spool you want to track:
-   - Set the spool name (e.g., "Red PLA", "Black PETG")
-   - Select the material type (PLA, PETG, ABS, TPU, etc.)
-   - The density will auto-populate based on material
-   - Enter the initial weight in grams (e.g., 1000g for a 1kg spool)
-   - The initial length will be automatically calculated
+1. **Navigate** to the Spool Manager dashboard
+2. **For each spool:**
+   - Set name (e.g., "Red PLA", "Black PETG")
+   - Select material type (PLA, PETG, ABS, etc.)
+   - Density auto-populates based on material
+   - Enter initial weight in grams (e.g., 1000 for 1kg spool)
+   - Length calculates automatically
 
-3. Set your filament diameter (usually 1.75mm)
-4. Select the active spool from the dropdown
-5. Enable tracking
+3. **Set filament diameter** (usually 1.75mm)
+4. **Select active spool** from dropdown
+5. **Enable tracking**
 
 ### Entity Name Customization
 
-The automations reference your printer by name. By default, they look for entities like:
-- `sensor.centauri_carbon_print_status`
+**Default configuration** assumes entities like:
+- `sensor.centauri_carbon_current_status`
 - `sensor.centauri_carbon_total_extrusion`
+- `sensor.centauri_carbon_file_name`
 
-If your printer has a different name, you'll need to update these references in both package files:
+**If your printer has a different name**, update references in both package files:
 
 ```yaml
-# Find and replace in both files:
-# sensor.YOUR_PRINTER_NAME_print_status
-# sensor.YOUR_PRINTER_NAME_total_extrusion
-# sensor.YOUR_PRINTER_NAME_current_status
-# sensor.YOUR_PRINTER_NAME_file_name
+# Find and replace in:
+# - config/packages/elegoo_spool_manager.yaml
+# - config/packages/elegoo_spool_history.yaml
+
+# Replace:
+sensor.centauri_carbon_current_status
+sensor.centauri_carbon_total_extrusion
+sensor.centauri_carbon_file_name
+
+# With your printer name:
+sensor.YOUR_PRINTER_NAME_current_status
+sensor.YOUR_PRINTER_NAME_total_extrusion
+sensor.YOUR_PRINTER_NAME_file_name
 ```
 
 ## Usage
 
 ### During Printing
 
-1. Select the active spool before starting a print
-2. The system will automatically:
-   - Capture the starting state when printing begins
-   - Track extrusion amount during the print (updated every 60 seconds)
-   - Log the final usage when the print completes
-   - Update the spool's used length
+1. Select active spool before starting print
+2. System automatically:
+   - Captures starting state when printing begins
+   - Tracks extrusion every 60 seconds during print
+   - Logs final usage when print completes/stops
+   - Updates spool's used length
 
 ### After Printing
 
-- View remaining filament in both length (mm) and weight (g)
-- Check the last print's filament usage
-- Navigate to history view to see all prints for a spool
-- Use "Undo Last Print" if you need to restore filament
+- View remaining filament (length & weight)
+- Check last print's usage
+- Navigate to history for detailed logs
+- Undo last print if needed
 
-### Changing Spools
+### Managing Spools
 
-When you finish a spool:
-1. Click "Mark as Empty" to set it to fully used
-2. Enter a new spool by clicking "Reset Spool (New Spool)"
-3. Update the spool name and material if needed
-4. Enter the new initial weight
+**When spool is empty:**
+1. Click "Mark as Empty"
+2. Click "Reset Spool (New Spool)"
+3. Update name/material if needed
+4. Enter new spool weight
 
-## Files Included
+## What's Included
 
-### Core Packages
-- `config/packages/elegoo_spool_manager.yaml` - Main spool tracking with weight/density support
-- `config/packages/elegoo_spool_history.yaml` - Print history logging and undo functionality
+### Package Files
+- `elegoo_spool_manager.yaml` - Core spool tracking with material/density support
+- `elegoo_spool_history.yaml` - Print history logging and undo functionality
 
 ### Dashboards
-- `config/lovelace-spool-manager.yaml` - Full dashboard with all features and history views
-- `config/dashboards/elegoo_spool_manager_simple.yaml` - Minimal card for existing dashboards
-- `config/dashboards/elegoo_spool_manager_card.yaml` - Standalone card version
-- `config/dashboards/elegoo_spool_manager_with_history.yaml` - Card with collapsible history
-- `config/dashboards/spool_1_history.yaml` - Example detailed history page template
+- `lovelace-spool-manager.yaml` - Full dashboard with all features and history views
+- `elegoo_spool_manager_simple.yaml` - Minimal card for existing dashboards
+- `elegoo_spool_manager_card.yaml` - Standalone card version
+- `elegoo_spool_manager_with_history.yaml` - Collapsible card with history links
+- `spool_1_history.yaml` - Detailed history page template
 
 ### Documentation
-- `SPOOL_MANAGER.md` - Detailed setup and configuration guide
-- `SPOOL_HISTORY_GUIDE.md` - Print history and tracking documentation
+- `SPOOL_MANAGER.md` - Complete setup and configuration guide
+- `SPOOL_HISTORY_GUIDE.md` - Print history and tracking details
+- `RELEASE.md` - Guide for maintainers creating releases
 
 ## Material Densities
 
-The system includes preset densities for common materials:
-- PLA: 1.24 g/cm³
-- PETG: 1.27 g/cm³
-- ABS: 1.04 g/cm³
-- TPU: 1.21 g/cm³
-- Nylon: 1.14 g/cm³
-- PC (Polycarbonate): 1.20 g/cm³
+Included material profiles:
+- **PLA:** 1.24 g/cm³
+- **PETG:** 1.27 g/cm³
+- **ABS:** 1.04 g/cm³
+- **TPU:** 1.21 g/cm³
+- **Nylon:** 1.14 g/cm³
+- **PC (Polycarbonate):** 1.20 g/cm³
 
-You can manually adjust density for custom or specialty filaments.
+Custom/specialty filaments can have density manually adjusted.
 
 ## Troubleshooting
 
 ### Print history not showing
-1. Check that automations are enabled
-2. Verify your printer entity names match the automations
-3. Check Developer Tools → States to see entity values during a print
-4. Review Home Assistant logs for any errors
+1. Verify automations are enabled (Settings → Automations & Scenes)
+2. Check printer entity names match package configuration
+3. Use Developer Tools → States to verify entity values during print
+4. Review Home Assistant logs for errors
 
 ### Usage not updating
 1. Confirm "Enable Tracking" is on
-2. Verify the active spool is selected
-3. Check that `sensor.YOUR_PRINTER_NAME_total_extrusion` exists and updates
-4. Ensure extrusion sensor provides data in millimeters
+2. Verify active spool is selected
+3. Check `sensor.YOUR_PRINTER_NAME_total_extrusion` exists and updates
+4. Ensure extrusion sensor reports in millimeters
 
 ### Wrong weight calculations
-1. Verify the material density is correct
-2. Check filament diameter is set correctly (1.75mm or 2.85mm)
-3. Ensure initial weight was entered in grams, not kilograms
+1. Verify material density is correct
+2. Check filament diameter (1.75mm vs 2.85mm)
+3. Confirm initial weight in grams (not kilograms)
 
-## Support
+## Support & Contributing
 
-For issues, feature requests, or questions about the main integration:
-- [GitHub Issues](https://github.com/danielcherubini/elegoo-homeassistant/issues)
+- **Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/discussions)
+- **Pull Requests:** Contributions welcome!
 
-For spool manager specific questions:
-- Check the detailed guides in `SPOOL_MANAGER.md` and `SPOOL_HISTORY_GUIDE.md`
+## Related Projects
+
+- [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) - Required integration for Elegoo printers
+- [Home Assistant](https://www.home-assistant.io/) - Open source home automation platform
 
 ## License
 
-This project is licensed under the same license as the main Elegoo Printer Integration.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-Part of the Elegoo Printer Home Assistant Integration project.
+Created for the Elegoo Centauri Carbon and compatible FDM printers. Works with any printer providing extrusion data through the Elegoo Printer Integration.
