@@ -27,8 +27,8 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 ### Method 1: Download ZIP (Recommended)
 
 1. **Download** the latest release:
-   - Go to [Releases](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/releases)
-   - Download `centauri-carbon-spool-manager.zip`
+   - Go to [Releases](https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager/releases)
+   - Download `Centauri-Carbon-Spool-Manager.zip`
 
 2. **Extract** the ZIP file
 
@@ -45,16 +45,16 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 ### Method 2: Git Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager.git
+git clone https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager.git
 
 # Copy files to Home Assistant
-cp centauri-carbon-spool-manager/config/packages/*.yaml /config/packages/
-cp centauri-carbon-spool-manager/config/lovelace-spool-manager.yaml /config/
+cp Centauri-Carbon-Spool-Manager/config/packages/*.yaml /config/packages/
+cp Centauri-Carbon-Spool-Manager/config/lovelace-spool-manager.yaml /config/
 ```
 
 ### Method 3: Direct File Download
 
-1. Browse to [this repository](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager)
+1. Browse to [this repository](https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager)
 2. Navigate to each file under `config/packages/` and `config/`
 3. Click "Raw" and save to your Home Assistant config directory
 
@@ -228,8 +228,8 @@ Custom/specialty filaments can have density manually adjusted.
 
 ## Support & Contributing
 
-- **Issues:** [GitHub Issues](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/discussions)
+- **Issues:** [GitHub Issues](https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager/discussions)
 - **Pull Requests:** Contributions welcome!
 
 ## Related Projects

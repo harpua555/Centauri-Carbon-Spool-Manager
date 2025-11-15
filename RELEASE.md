@@ -20,7 +20,7 @@ git push origin v1.0.0
 
 ### 3. GitHub Actions will automatically:
 
-- Create a ZIP file `centauri-carbon-spool-manager.zip` containing:
+- Create a ZIP file `Centauri-Carbon-Spool-Manager.zip` containing:
   - All package files
   - All dashboard files
   - Documentation
@@ -33,7 +33,7 @@ git push origin v1.0.0
 
 ### 4. Release will be available at:
 
-`https://github.com/YOUR_USERNAME/centauri-carbon-spool-manager/releases`
+`https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager/releases`
 
 ## Tag Naming Convention
 
@@ -62,7 +62,7 @@ cp config/lovelace-spool-manager.yaml release/config/
 cp README.md SPOOL_MANAGER.md SPOOL_HISTORY_GUIDE.md LICENSE release/
 
 # Create ZIP
-cd release && zip -r ../centauri-carbon-spool-manager.zip . && cd ..
+cd release && zip -r ../Centauri-Carbon-Spool-Manager.zip . && cd ..
 ```
 
 Then upload to GitHub Releases manually.

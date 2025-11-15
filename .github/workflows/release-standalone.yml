@@ -115,7 +115,7 @@ jobs:
 
           # Create ZIP archive
           cd release
-          zip -r ../centauri-carbon-spool-manager.zip .
+          zip -r ../Centauri-Carbon-Spool-Manager.zip .
           cd ..
 
       - name: Extract version from tag
@@ -133,7 +133,7 @@ jobs:
 
             ## Installation
 
-            1. Download `centauri-carbon-spool-manager.zip`
+            1. Download `Centauri-Carbon-Spool-Manager.zip`
             2. Extract the archive
             3. Run `./install.sh` or manually copy files to your Home Assistant config
             4. See `README.md` for detailed setup instructions
@@ -163,7 +163,7 @@ jobs:
 
             For complete features and setup instructions, see README.md
           files: |
-            centauri-carbon-spool-manager.zip
+            Centauri-Carbon-Spool-Manager.zip
           draft: false
           prerelease: false
         env:
