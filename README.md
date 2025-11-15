@@ -1,198 +1,206 @@
-# Elegoo Printers for Home Assistant
+# Elegoo Printer Filament Spool Manager (Standalone)
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-![GitHub stars](https://img.shields.io/github/stars/danielcherubini/elegoo-homeassistant)
-![GitHub issues](https://img.shields.io/github/issues/danielcherubini/elegoo-homeassistant)
+**Track and manage your 3D printer filament spools with automatic usage tracking**
 
-Bring your Elegoo 3D printers into Home Assistant! This integration allows you to monitor status, view live print thumbnails, and control your printers directly from your smart home dashboard.
+This is a standalone filament spool management system for Home Assistant that works with the [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant). It provides automatic filament usage tracking based on extrusion data from your Elegoo FDM printer.
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=danielcherubini&repository=elegoo-homeassistant&category=Integration)
+## Prerequisites
 
-<img width="1000" height="auto" alt="image" src="https://github.com/user-attachments/assets/d2010a5d-d9f2-473c-8c6c-60e64bb43f97" />
+- Home Assistant instance
+- [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) already installed and configured
+- Elegoo FDM printer (e.g., Neptune 4, OrangeStorm Giga, Centauri Carbon)
 
-## Index
+## Features
 
-- [Features](#-features)
-- [Local Proxy Server](#️-local-proxy-server)
-- [Supported Printers](#️-supported-printers)
-- [Installation](#️-installation)
-- [Configuration](#-configuration)
-- [Entities](#-entities)
-- [Automation Blueprints](#automation-blueprints)
-- [Contributing](#️-contributing)
+- **4 Spool Tracking** - Track up to 4 different filament spools
+- **Material & Density** - Configure material type and density for accurate weight calculations
+- **Automatic Usage Tracking** - Automatically tracks filament usage during prints using extrusion data
+- **Weight & Length Display** - View remaining filament in both mm and grams
+- **Print History** - Log every print with filament usage details
+- **Undo Last Print** - Made a mistake? Restore filament from the last print
+- **Multiple Dashboards** - Choose from simple, detailed, or history-focused views
+- **Persistent Storage** - All data survives Home Assistant restarts
 
----
+## Installation
 
-## ✨ Features
+### 1. Copy Package Files
 
-- **Broad Printer Support:** Compatible with a growing list of Elegoo resin and FDM printers.
-- **Comprehensive Sensor Data:** Exposes a wide range of printer attributes and real-time status sensors.
-- **Live Camera:** Monitor your print from anywhere.
-- **Print Thumbnails:** See an image of what you are currently printing directly in Home Assistant.
-- **Direct Printer Control:** Stop and pause prints, control temperatures, and adjust speeds.
-- **Local Proxy Server:** An optional built-in proxy to bypass printer connection limits, allowing multiple clients (slicers, monitoring tools) to connect simultaneously.
-- **Automation Blueprints:** Includes a ready-to-use blueprint for print progress notifications.
+Copy the package files to your Home Assistant configuration:
 
----
+```bash
+# Copy both package files to your packages directory
+cp config/packages/elegoo_spool_manager.yaml /config/packages/
+cp config/packages/elegoo_spool_history.yaml /config/packages/
+```
 
-## 🛰️ Local Proxy Server
+### 2. Enable Packages in Configuration
 
-Printers like the Elegoo Centauri Carbon have a built-in limit of 4 simultaneous connections. Since the video stream consumes one of these connections by itself, users can easily hit this limit, resulting in "connection limit reached" errors.
+Add this to your `configuration.yaml` if not already present:
 
-The optional proxy server solves this by acting as a single gateway. It routes all commands, file uploads, and **even the video stream** through just one stable connection to the printer, effectively bypassing the limit and preventing connection conflicts.
+```yaml
+homeassistant:
+  packages: !include_dir_named packages
+```
 
-You can enable the proxy server during the initial setup of the integration or at any time afterward by clicking **"Configure"** on the integration card.
+### 3. Choose and Install Dashboard
 
-➡️ **[Read more and join the discussion here](https://github.com/danielcherubini/elegoo-homeassistant/discussions/95)**
+Pick one of the dashboard options:
 
----
+#### Option A: Full Dashboard (Recommended)
+Copy the complete dashboard with history views:
+```bash
+cp config/lovelace-spool-manager.yaml /config/
+```
 
-## 🖨️ Supported Printers
+Then add to your `configuration.yaml`:
+```yaml
+lovelace:
+  mode: storage
+  dashboards:
+    lovelace-spool-manager:
+      mode: yaml
+      title: Spool Manager
+      icon: mdi:printer-3d-nozzle
+      show_in_sidebar: true
+      filename: lovelace-spool-manager.yaml
+```
 
-This integration is designed to work with Elegoo printers that use the `SDCP` protocol. SDCP can be transported over WebSocket (newer models) or MQTT (legacy models). The following models have been tested and are known to work:
+#### Option B: Simple Card
+Copy just the simple card to add to an existing dashboard:
+```bash
+cp config/dashboards/elegoo_spool_manager_simple.yaml /config/dashboards/
+```
 
-### ✅ Fully Supported Printers (SDCP over WebSocket)
+Then add the card manually to your dashboard via the UI.
 
-#### Resin Printers
+#### Option C: Card with History Links
+For a collapsible card with history buttons:
+```bash
+cp config/dashboards/elegoo_spool_manager_with_history.yaml /config/dashboards/
+```
 
-- Mars 5
-- Mars 5 Ultra
-- Saturn 4
-- Saturn 4 Ultra
+### 4. Restart Home Assistant
 
-#### FDM Printers
+Restart Home Assistant to load the new configuration.
 
-- Centauri Carbon
+## Configuration
 
-### 🧪 Beta Support - Legacy Printers (SDCP over MQTT)
+### Initial Setup
 
-The following older models use **SDCP over MQTT** and have **experimental/beta support**. Most features work, but some data may be missing or incomplete due to transport differences:
+1. Navigate to the Spool Manager dashboard
+2. For each spool you want to track:
+   - Set the spool name (e.g., "Red PLA", "Black PETG")
+   - Select the material type (PLA, PETG, ABS, TPU, etc.)
+   - The density will auto-populate based on material
+   - Enter the initial weight in grams (e.g., 1000g for a 1kg spool)
+   - The initial length will be automatically calculated
 
-#### Resin Printers
+3. Set your filament diameter (usually 1.75mm)
+4. Select the active spool from the dropdown
+5. Enable tracking
 
-- Saturn 2
-- Saturn 2 8K
-- Saturn 3
-- Saturn 3 Ultra
-- Mars 3
-- Mars 3 Pro
-- Mars 4
-- Mars 4 DLP
-- Mars 4 Max
-- Mars 4 Ultra
+### Entity Name Customization
 
-**Note:** SDCP over MQTT support is in early stages. If you experience any issues or notice missing/incorrect data, please [open a GitHub issue](https://github.com/danielcherubini/elegoo-homeassistant/issues) with details about your printer model and the problem you're encountering. Community contributions to improve MQTT transport support are greatly appreciated!
+The automations reference your printer by name. By default, they look for entities like:
+- `sensor.centauri_carbon_print_status`
+- `sensor.centauri_carbon_total_extrusion`
 
-**Known Limitations for MQTT Transport:**
+If your printer has a different name, you'll need to update these references in both package files:
 
-- Begin Time, End Time, and Cover Image sensors will show "Unknown" (this data is not available via MQTT transport)
-- All other sensors (status, layers, temperatures, progress, etc.) work normally
+```yaml
+# Find and replace in both files:
+# sensor.YOUR_PRINTER_NAME_print_status
+# sensor.YOUR_PRINTER_NAME_total_extrusion
+# sensor.YOUR_PRINTER_NAME_current_status
+# sensor.YOUR_PRINTER_NAME_file_name
+```
 
----
+## Usage
 
-If your printer isn't listed but uses SDCP (over WebSocket or MQTT), it may still work. Please [open an issue](https://github.com/danielcherubini/elegoo-homeassistant/issues) to let us know!
+### During Printing
 
----
+1. Select the active spool before starting a print
+2. The system will automatically:
+   - Capture the starting state when printing begins
+   - Track extrusion amount during the print (updated every 60 seconds)
+   - Log the final usage when the print completes
+   - Update the spool's used length
 
-## ⚙️ Installation
+### After Printing
 
-The recommended way to install this integration is through the [Home Assistant Community Store (HACS)](https://hacs.xyz/).
+- View remaining filament in both length (mm) and weight (g)
+- Check the last print's filament usage
+- Navigate to history view to see all prints for a spool
+- Use "Undo Last Print" if you need to restore filament
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=danielcherubini&repository=elegoo-homeassistant&category=Integration)
+### Changing Spools
 
-1.  In HACS, go to **Integrations** and click the **"+" (Explore & Download Repositories)** button.
-2.  Search for **"Elegoo Printers"** and select it.
-3.  Click **"Download"** and follow the prompts.
-4.  After downloading, **restart Home Assistant**.
+When you finish a spool:
+1. Click "Mark as Empty" to set it to fully used
+2. Enter a new spool by clicking "Reset Spool (New Spool)"
+3. Update the spool name and material if needed
+4. Enter the new initial weight
 
----
+## Files Included
 
-## 🔧 Configuration
+### Core Packages
+- `config/packages/elegoo_spool_manager.yaml` - Main spool tracking with weight/density support
+- `config/packages/elegoo_spool_history.yaml` - Print history logging and undo functionality
 
-Once installed, you can add your printer to Home Assistant:
+### Dashboards
+- `config/lovelace-spool-manager.yaml` - Full dashboard with all features and history views
+- `config/dashboards/elegoo_spool_manager_simple.yaml` - Minimal card for existing dashboards
+- `config/dashboards/elegoo_spool_manager_card.yaml` - Standalone card version
+- `config/dashboards/elegoo_spool_manager_with_history.yaml` - Card with collapsible history
+- `config/dashboards/spool_1_history.yaml` - Example detailed history page template
 
-1.  Go to **Settings** > **Devices & Services**.
-2.  Click **"Add Integration"** and search for **"Elegoo Printers"**.
-3.  The integration will attempt to auto-discover printers on your network. If your printer is found, select it from the list.
-4.  If no printer is discovered, you can select **"Configure manually"** and enter your printer's IP address.
-5.  Follow the on-screen prompts to complete the setup. You will be able to enable the **Local Proxy Server** during this step.
+### Documentation
+- `SPOOL_MANAGER.md` - Detailed setup and configuration guide
+- `SPOOL_HISTORY_GUIDE.md` - Print history and tracking documentation
 
-### ⚠️ Firmware v1.1.29 Bug Notice
+## Material Densities
 
-Please be aware that the Elegoo firmware **version 1.1.29** has a bug that prevents remote control of lights, temperatures, and fans **while a print is in progress**. This is a limitation within the printer's firmware itself. Previous versions (like v1.1.25) do not have this bug.
+The system includes preset densities for common materials:
+- PLA: 1.24 g/cm³
+- PETG: 1.27 g/cm³
+- ABS: 1.04 g/cm³
+- TPU: 1.21 g/cm³
+- Nylon: 1.14 g/cm³
+- PC (Polycarbonate): 1.20 g/cm³
 
----
+You can manually adjust density for custom or specialty filaments.
 
-## 📊 Entities
+## Troubleshooting
 
-The integration creates the following entities for your printer.
+### Print history not showing
+1. Check that automations are enabled
+2. Verify your printer entity names match the automations
+3. Check Developer Tools → States to see entity values during a print
+4. Review Home Assistant logs for any errors
 
-### Camera
+### Usage not updating
+1. Confirm "Enable Tracking" is on
+2. Verify the active spool is selected
+3. Check that `sensor.YOUR_PRINTER_NAME_total_extrusion` exists and updates
+4. Ensure extrusion sensor provides data in millimeters
 
-| Entity   | Description                                 |
-| -------- | ------------------------------------------- |
-| `Camera` | Displays a live video of the current print. |
+### Wrong weight calculations
+1. Verify the material density is correct
+2. Check filament diameter is set correctly (1.75mm or 2.85mm)
+3. Ensure initial weight was entered in grams, not kilograms
 
-### Image
+## Support
 
-| Entity      | Description                                |
-| ----------- | ------------------------------------------ |
-| `Thumbnail` | Displays a thumbnail of the current print. |
+For issues, feature requests, or questions about the main integration:
+- [GitHub Issues](https://github.com/danielcherubini/elegoo-homeassistant/issues)
 
-### Buttons
+For spool manager specific questions:
+- Check the detailed guides in `SPOOL_MANAGER.md` and `SPOOL_HISTORY_GUIDE.md`
 
-| Button         | Description                   |
-| -------------- | ----------------------------- |
-| `Stop Print`   | Stops the current print job.  |
-| `Pause Print`  | Pauses the current print job. |
-| `Resume Print` | Resumes a paused print job.   |
+## License
 
-### Select
+This project is licensed under the same license as the main Elegoo Printer Integration.
 
-| Select        | Description                                                    |
-| ------------- | -------------------------------------------------------------- |
-| `Print Speed` | Allows you to change the print speed (e.g., Standard, Silent). |
+## Credits
 
-### Number
-
-| Number               | Description                                     | Unit |
-| -------------------- | ----------------------------------------------- | ---- |
-| `Target Bed Temp`    | Sets the target temperature for the heated bed. | `°C` |
-| `Target Nozzle Temp` | Sets the target temperature for the nozzle.     | `°C` |
-
-### Sensors
-
-| Sensor               | Description                                     | Unit      |
-| -------------------- | ----------------------------------------------- | --------- |
-| `Status`             | The current status of the printer.              |           |
-| `File Name`          | The name of the file currently being printed.   |           |
-| `Print Progress`     | The completion percentage of the current print. | `%`       |
-| `Time Remaining`     | Estimated time remaining for the current print. | `minutes` |
-| `Time Elapsed`       | Time elapsed for the current print.             | `minutes` |
-| `Layer`              | The current layer being printed.                |           |
-| `Total Layers`       | The total number of layers in the print job.    |           |
-| `Nozzle Temp`        | The current temperature of the nozzle.          | `°C`      |
-| `Bed Temp`           | The current temperature of the heated bed.      | `°C`      |
-| `Fan Speed`          | The current speed of the cooling fan.           | `%`       |
-| `Print Speed`        | The current print speed multiplier.             | `%`       |
-| `Print Error Reason` | The reason for the last print error.            |           |
-| `Firmware Version`   | The firmware version of the printer.            |           |
-| `Z-Height`           | The current height of the Z-axis.               | `mm`      |
-
----
-
-## Automation Blueprints
-
-This integration includes a blueprint to send notifications to your mobile device with the progress of your prints.
-
-<img width="400" height="auto" alt="image" src="https://github.com/user-attachments/assets/f131475a-6d12-44c6-8572-852f159d0045" />
-
-[Read more about it here](https://github.com/danielcherubini/elegoo-homeassistant/discussions/180)
-
-[![Open your Home Assistant instance and import the blueprint.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://github.com/danielcherubini/elegoo-homeassistant/blob/main/blueprints/automation/elegoo_printer/elegoo_printer_progress.yaml)
-
----
-
-## ❤️ Contributing
-
-Contributions are welcome! If you'd like to help, please feel free to submit a pull request or open an issue to discuss a new feature or bug.
+Part of the Elegoo Printer Home Assistant Integration project.

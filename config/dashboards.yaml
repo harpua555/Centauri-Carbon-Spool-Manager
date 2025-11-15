@@ -1,9 +1,0 @@
-# Automatic Dashboard Loading
-# This file configures dashboards that are automatically available in Home Assistant
-
-lovelace-spool-manager:
-  mode: yaml
-  title: Spool Manager
-  icon: mdi:printer-3d-nozzle
-  show_in_sidebar: true
-  filename: lovelace-spool-manager.yaml
