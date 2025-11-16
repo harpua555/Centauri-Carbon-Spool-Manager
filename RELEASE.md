@@ -33,7 +33,7 @@ git push origin v1.0.0
 
 ### 4. Release will be available at:
 
-`https://github.com/zacharyparsons/Centauri-Carbon-Spool-Manager/releases`
+`https://github.com/harpua555/Centauri-Carbon-Spool-Manager/releases`
 
 ## Tag Naming Convention
 
