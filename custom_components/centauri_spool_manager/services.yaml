@@ -1,0 +1,66 @@
+reset_spool:
+  name: Reset Spool
+  description: Reset a spool to initial state (for new spool installation)
+  fields:
+    spool_number:
+      name: Spool Number
+      description: Which spool to reset (1-4)
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+
+undo_last_print:
+  name: Undo Last Print
+  description: Restore filament from the last print (in case wrong spool was selected)
+  fields:
+    spool_number:
+      name: Spool Number
+      description: Which spool to undo (1-4)
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+
+mark_spool_empty:
+  name: Mark Spool Empty
+  description: Mark a spool as completely used up
+  fields:
+    spool_number:
+      name: Spool Number
+      description: Which spool to mark as empty (1-4)
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+
+set_spool_weight:
+  name: Set Spool Weight
+  description: Set initial spool weight (calculates length automatically)
+  fields:
+    spool_number:
+      name: Spool Number
+      description: Which spool to configure (1-4)
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+    weight_grams:
+      name: Weight (grams)
+      description: Initial weight of the spool in grams
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 1
+          unit_of_measurement: "g"
+          mode: box

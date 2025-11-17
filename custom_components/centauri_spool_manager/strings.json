@@ -4,11 +4,78 @@
     "step": {
       "user": {
         "title": "Set up Centauri Carbon Spool Manager",
-        "description": "This will install automatic filament tracking for your 3D printer.\n\n**What gets installed:**\n• 4 spool tracking entities\n• Material & density profiles (PLA, PETG, ABS, TPU, Nylon, ASA)\n• Print history logging\n• Undo last print feature\n• Dashboard configurations\n\n**After installation:**\n1. Still need to add one line to configuration.yaml (shown in logs)\n2. Configure your printer entity names\n3. Add dashboard via UI or configuration.yaml\n\nClick Submit to continue."
+        "description": "Select your 3D printer and configure spool tracking.\n\n**What you'll get:**\n• Automatic filament usage tracking\n• Weight and length calculations\n• Print history with undo functionality\n• Services for spool management\n\nPrinter entities will be auto-detected from the Elegoo integration.",
+        "data": {
+          "printer_device": "3D Printer",
+          "num_spools": "Number of Spools to Track"
+        }
+      },
+      "confirm": {
+        "title": "Confirm Setup",
+        "description": "Ready to create {num_spools} spool tracking entities.\n\nAll entities will be created automatically - no manual configuration needed!"
       }
     },
+    "error": {
+      "no_printers_found": "No printer devices found. Install and configure the Elegoo Printer integration first."
+    },
     "abort": {
-      "single_instance_allowed": "Only a single instance is allowed."
+      "single_instance_allowed": "Only one instance of Centauri Spool Manager can be configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Centauri Spool Manager Options",
+        "data": {
+          "num_spools": "Number of Spools to Track"
+        }
+      }
+    }
+  },
+  "services": {
+    "reset_spool": {
+      "name": "Reset Spool",
+      "description": "Reset a spool to prepare for a new filament roll",
+      "fields": {
+        "spool_number": {
+          "name": "Spool Number",
+          "description": "Which spool to reset (1-4)"
+        }
+      }
+    },
+    "undo_last_print": {
+      "name": "Undo Last Print",
+      "description": "Restore filament usage from the last print (if wrong spool was selected)",
+      "fields": {
+        "spool_number": {
+          "name": "Spool Number",
+          "description": "Which spool to undo (1-4)"
+        }
+      }
+    },
+    "mark_spool_empty": {
+      "name": "Mark Spool Empty",
+      "description": "Mark a spool as completely used up",
+      "fields": {
+        "spool_number": {
+          "name": "Spool Number",
+          "description": "Which spool to mark as empty (1-4)"
+        }
+      }
+    },
+    "set_spool_weight": {
+      "name": "Set Spool Weight",
+      "description": "Set initial spool weight - length will be calculated automatically",
+      "fields": {
+        "spool_number": {
+          "name": "Spool Number",
+          "description": "Which spool to configure (1-4)"
+        },
+        "weight_grams": {
+          "name": "Weight (grams)",
+          "description": "Initial weight of the filament in grams"
+        }
+      }
     }
   }
 }
