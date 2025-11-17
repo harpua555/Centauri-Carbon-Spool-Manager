@@ -294,7 +294,7 @@ class SpoolStateSensor(SensorEntity):
         self._entry_id = entry_id
         self._spool_num = spool_num
         self._attr_unique_id = f"{entry_id}_spool_{spool_num}_state"
-        self._attr_name = f"Centauri Spool Manager Spool {spool_num} State"
+        self._attr_name = f"Spool {spool_num} State"
         self._attr_native_value = "ready"
 
     @property
