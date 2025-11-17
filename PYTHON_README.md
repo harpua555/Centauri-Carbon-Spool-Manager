@@ -26,11 +26,21 @@ This is a pure Python custom integration - no configuration.yaml editing require
 2. Search "**Centauri Carbon Spool Manager**"
 3. Select your printer from the dropdown
 4. Choose number of spools (2-4)
-5. Done! A "**Spool Manager**" dashboard is automatically created
+5. Done! (Check the logs for dashboard setup instructions)
+
+### Dashboard Setup
+
+After installing the integration, add the dashboard:
+
+1. Go to **Settings** → **Dashboards** → **Add Dashboard**
+2. Name it "Spool Manager"
+3. Click the **⋮** menu → **Edit Dashboard** → **Raw configuration editor**
+4. Copy the YAML from `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
+5. Paste it in and save
 
 ### First Use
 
-1. **Open the Spool Manager dashboard** (automatically created in your sidebar)
+1. **Open the Spool Manager dashboard**
 
 2. **Configure a spool:**
    - Navigate to a spool tab (Spool 1, Spool 2, etc.)
@@ -45,9 +55,7 @@ This is a pure Python custom integration - no configuration.yaml editing require
 
 4. **Start printing!** Usage is tracked automatically
 
-### Dashboard Features
-
-The auto-generated dashboard includes:
+The dashboard includes:
 - **Overview tab** - All spools at a glance with gauge indicators
 - **Individual spool tabs** - Full configuration and statistics for each spool
 - **Color-coded gauges** - Green (>50%), Yellow (20-50%), Red (<20%)
@@ -71,11 +79,10 @@ All controls are available directly in the Home Assistant UI:
 - **Undo Last Print** button - Restore filament if wrong spool selected
 
 **Dashboard:**
-- Automatically created on installation as "Spool Manager" in your sidebar
+- Ready-to-use YAML provided in `lovelace/dashboard.yaml`
 - Shows overview of all spools with gauges
 - Individual tabs for detailed spool configuration
-- If you need to recreate it manually, use the YAML from:
-  `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
+- See "Dashboard Setup" section above for installation
 
 ## What You Get
 

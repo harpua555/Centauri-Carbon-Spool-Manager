@@ -5,7 +5,8 @@ import logging
 from typing import Any
 
 from homeassistant.core import HomeAssistant
-from homeassistant.components import lovelace
+from homeassistant.components.lovelace import dashboard as lovelace_dashboard
+from homeassistant.helpers import storage
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,48 +15,41 @@ DASHBOARD_TITLE = "Spool Manager"
 
 
 async def async_create_dashboard(hass: HomeAssistant, num_spools: int) -> bool:
-    """Create the Spool Manager dashboard automatically.
+    """Provide dashboard setup instructions.
+
+    Note: Programmatic dashboard creation in Home Assistant is complex and often
+    requires a restart. Instead, we provide a ready-to-use YAML file.
 
     Args:
         hass: Home Assistant instance
         num_spools: Number of spools to include in dashboard
 
     Returns:
-        bool: True if dashboard was created successfully, False otherwise
+        bool: Always returns True (info message only)
     """
-    try:
-        # Check if dashboard already exists
-        dashboards = hass.data.get("lovelace", {}).get("dashboards", {})
-        if DASHBOARD_URL in dashboards:
-            _LOGGER.info(f"Dashboard '{DASHBOARD_TITLE}' already exists, skipping creation")
-            return True
-
-        # Build dashboard configuration
-        config = _generate_dashboard_config(num_spools)
-
-        # Create the dashboard using Home Assistant's lovelace API
-        await lovelace.async_create_dashboard(
-            hass,
-            DASHBOARD_URL,
-            {
-                "mode": "storage",
-                "title": DASHBOARD_TITLE,
-                "icon": "mdi:printer-3d",
-                "show_in_sidebar": True,
-                "require_admin": False,
-            },
-        )
-
-        # Set the dashboard configuration
-        collection = await lovelace.async_get_collection(hass, DASHBOARD_URL)
-        await collection.async_save(config)
-
-        _LOGGER.info(f"Successfully created '{DASHBOARD_TITLE}' dashboard")
-        return True
-
-    except Exception as e:
-        _LOGGER.error(f"Failed to create dashboard: {e}")
-        return False
+    _LOGGER.info(
+        "╔════════════════════════════════════════════════════════════════╗\n"
+        "║  Centauri Spool Manager - Dashboard Setup                     ║\n"
+        "╠════════════════════════════════════════════════════════════════╣\n"
+        "║  To add the Spool Manager dashboard:                          ║\n"
+        "║                                                                ║\n"
+        "║  1. Go to Settings → Dashboards → Add Dashboard               ║\n"
+        "║  2. Click 'Take Control' to enable YAML mode                  ║\n"
+        "║  3. Copy the YAML from:                                       ║\n"
+        "║     custom_components/centauri_spool_manager/lovelace/        ║\n"
+        "║     dashboard.yaml                                            ║\n"
+        "║  4. Paste into your dashboard                                 ║\n"
+        "║                                                                ║\n"
+        "║  Or view the file in your config at:                          ║\n"
+        f"║  .../custom_components/centauri_spool_manager/lovelace/       ║\n"
+        "║                                                                ║\n"
+        "║  The dashboard includes:                                      ║\n"
+        "║  • Overview tab with all spools                               ║\n"
+        f"║  • {num_spools} individual spool configuration tabs                    ║\n"
+        "║  • Color-coded gauges and status indicators                   ║\n"
+        "╚════════════════════════════════════════════════════════════════╝"
+    )
+    return True
 
 
 def _generate_dashboard_config(num_spools: int) -> dict[str, Any]:
