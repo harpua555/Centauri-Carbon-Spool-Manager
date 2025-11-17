@@ -8,7 +8,7 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 
 - Home Assistant instance
 - [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) already installed and configured
-- Elegoo FDM printer with extrusion sensor (Centauri Carbon, Neptune 4, OrangeStorm Giga, etc.)
+- Elegoo Centauri Carbon running OpenCentauri patched firmware v 0.x.x or higher (not yet available)
 
 ## Features
 
@@ -24,7 +24,28 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 
 ## Installation
 
-### Method 1: Download ZIP (Recommended)
+### Method 1: HACS (Recommended)
+
+1. **Open HACS** in Home Assistant
+2. Click the **three dots menu (⋮)** → **Custom repositories**
+3. **Add repository:**
+   - URL: `https://github.com/harpua555/Centauri-Carbon-Spool-Manager`
+   - Category: **Template**
+4. Click **ADD**
+5. Search for "**Centauri Carbon Spool Manager**" in HACS
+6. Click **Download**
+7. **Copy files** to your Home Assistant config:
+   ```bash
+   # Copy both package files
+   cp config/packages/elegoo_spool_manager.yaml /config/packages/
+   cp config/packages/elegoo_spool_history.yaml /config/packages/
+
+   # Copy your preferred dashboard
+   cp config/lovelace-spool-manager.yaml /config/
+   ```
+8. **Restart** Home Assistant
+
+### Method 2: Download ZIP
 
 1. **Download** the latest release:
    - Go to [Releases](https://github.com/harpua555/Centauri-Carbon-Spool-Manager/releases)
@@ -41,22 +62,6 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
    # Copy your preferred dashboard
    cp config/lovelace-spool-manager.yaml /config/
    ```
-
-### Method 2: Git Clone
-
-```bash
-git clone https://github.com/harpua555/Centauri-Carbon-Spool-Manager.git
-
-# Copy files to Home Assistant
-cp Centauri-Carbon-Spool-Manager/config/packages/*.yaml /config/packages/
-cp Centauri-Carbon-Spool-Manager/config/lovelace-spool-manager.yaml /config/
-```
-
-### Method 3: Direct File Download
-
-1. Browse to [this repository](https://github.com/harpua555/Centauri-Carbon-Spool-Manager)
-2. Navigate to each file under `config/packages/` and `config/`
-3. Click "Raw" and save to your Home Assistant config directory
 
 ## Setup
 
