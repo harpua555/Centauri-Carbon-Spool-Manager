@@ -36,6 +36,7 @@ async def async_setup_entry(
             SpoolUsedLengthNumber(entry.entry_id, i),
             SpoolDensityNumber(entry.entry_id, i),
             SpoolLastPrintLengthNumber(entry.entry_id, i),
+            SpoolSetWeightNumber(hass, entry.entry_id, i),
         ])
 
     async_add_entities(entities)
@@ -185,3 +186,40 @@ class SpoolLastPrintLengthNumber(CentauriNumberEntity):
         """Update the value."""
         self._attr_native_value = value
         self.async_write_ha_state()
+
+
+class SpoolSetWeightNumber(NumberEntity):
+    """Number entity to set spool weight (triggers service call)."""
+
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = 0
+    _attr_native_max_value = 10000
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = "g"
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_icon = "mdi:weight-gram"
+
+    def __init__(self, hass: HomeAssistant, entry_id: str, spool_num: int):
+        """Initialize set weight number."""
+        self.hass = hass
+        self._entry_id = entry_id
+        self._spool_num = spool_num
+        self._attr_unique_id = f"centauri_spool_manager_spool_{spool_num}_set_weight"
+        self._attr_name = f"Centauri Spool Manager Spool {spool_num} Set Weight"
+        self._attr_native_value = 1000  # Default 1kg
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Set weight and call service to calculate length."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+        # Call the set_spool_weight service
+        await self.hass.services.async_call(
+            DOMAIN,
+            "set_spool_weight",
+            {
+                "spool_number": self._spool_num,
+                "weight_grams": value,
+            },
+            blocking=True,
+        )

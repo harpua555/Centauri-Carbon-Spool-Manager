@@ -24,4 +24,4 @@ MATERIAL_DENSITIES = {
 DEFAULT_FILAMENT_DIAMETER = 1.75
 
 # Entity platforms
-PLATFORMS = ["sensor", "number", "select", "text", "switch"]
+PLATFORMS = ["sensor", "number", "select", "text", "switch", "button"]

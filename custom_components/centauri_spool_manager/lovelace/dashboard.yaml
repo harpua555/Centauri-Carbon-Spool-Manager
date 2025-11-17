@@ -1,0 +1,181 @@
+# Centauri Carbon Spool Manager Dashboard
+# Copy this YAML to your Lovelace dashboard
+
+type: vertical-stack
+cards:
+  # Control Panel
+  - type: entities
+    title: Spool Manager Controls
+    entities:
+      - entity: select.centauri_spool_manager_active_spool
+        name: Active Spool
+      - entity: switch.centauri_spool_manager_enable_spool_tracking
+        name: Enable Tracking
+
+  # Spool 1
+  - type: entities
+    title: Spool 1
+    entities:
+      - entity: text.centauri_spool_manager_spool_1_name
+        name: Name
+      - entity: select.centauri_spool_manager_spool_1_material
+        name: Material
+      - entity: number.centauri_spool_manager_spool_1_set_weight
+        name: Set Initial Weight
+      - type: divider
+      - entity: sensor.centauri_spool_manager_spool_1_remaining_weight
+        name: Remaining Weight
+      - entity: sensor.centauri_spool_manager_spool_1_remaining_length
+        name: Remaining Length
+      - entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
+        name: Percentage Remaining
+      - entity: sensor.centauri_spool_manager_spool_1_last_print_weight
+        name: Last Print Used
+      - type: divider
+      - type: button
+        name: Reset Spool
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_1_reset
+      - type: button
+        name: Mark Empty
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_1_mark_empty
+      - type: button
+        name: Undo Last Print
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_1_undo_last_print
+
+  # Spool 2
+  - type: entities
+    title: Spool 2
+    entities:
+      - entity: text.centauri_spool_manager_spool_2_name
+        name: Name
+      - entity: select.centauri_spool_manager_spool_2_material
+        name: Material
+      - entity: number.centauri_spool_manager_spool_2_set_weight
+        name: Set Initial Weight
+      - type: divider
+      - entity: sensor.centauri_spool_manager_spool_2_remaining_weight
+        name: Remaining Weight
+      - entity: sensor.centauri_spool_manager_spool_2_remaining_length
+        name: Remaining Length
+      - entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
+        name: Percentage Remaining
+      - entity: sensor.centauri_spool_manager_spool_2_last_print_weight
+        name: Last Print Used
+      - type: divider
+      - type: button
+        name: Reset Spool
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_2_reset
+      - type: button
+        name: Mark Empty
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_2_mark_empty
+      - type: button
+        name: Undo Last Print
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_2_undo_last_print
+
+  # Spool 3 (if configured)
+  - type: entities
+    title: Spool 3
+    entities:
+      - entity: text.centauri_spool_manager_spool_3_name
+        name: Name
+      - entity: select.centauri_spool_manager_spool_3_material
+        name: Material
+      - entity: number.centauri_spool_manager_spool_3_set_weight
+        name: Set Initial Weight
+      - type: divider
+      - entity: sensor.centauri_spool_manager_spool_3_remaining_weight
+        name: Remaining Weight
+      - entity: sensor.centauri_spool_manager_spool_3_remaining_length
+        name: Remaining Length
+      - entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
+        name: Percentage Remaining
+      - entity: sensor.centauri_spool_manager_spool_3_last_print_weight
+        name: Last Print Used
+      - type: divider
+      - type: button
+        name: Reset Spool
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_3_reset
+      - type: button
+        name: Mark Empty
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_3_mark_empty
+      - type: button
+        name: Undo Last Print
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_3_undo_last_print
+
+  # Spool 4 (if configured)
+  - type: entities
+    title: Spool 4
+    entities:
+      - entity: text.centauri_spool_manager_spool_4_name
+        name: Name
+      - entity: select.centauri_spool_manager_spool_4_material
+        name: Material
+      - entity: number.centauri_spool_manager_spool_4_set_weight
+        name: Set Initial Weight
+      - type: divider
+      - entity: sensor.centauri_spool_manager_spool_4_remaining_weight
+        name: Remaining Weight
+      - entity: sensor.centauri_spool_manager_spool_4_remaining_length
+        name: Remaining Length
+      - entity: sensor.centauri_spool_manager_spool_4_percentage_remaining
+        name: Percentage Remaining
+      - entity: sensor.centauri_spool_manager_spool_4_last_print_weight
+        name: Last Print Used
+      - type: divider
+      - type: button
+        name: Reset Spool
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_4_reset
+      - type: button
+        name: Mark Empty
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_4_mark_empty
+      - type: button
+        name: Undo Last Print
+        tap_action:
+          action: call-service
+          service: button.press
+          target:
+            entity_id: button.centauri_spool_manager_spool_4_undo_last_print

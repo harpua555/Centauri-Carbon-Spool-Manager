@@ -31,13 +31,34 @@ This is a pure Python custom integration - no configuration.yaml editing require
 ### First Use
 
 1. **Set up a spool:**
-   - Give it a name
-   - Choose material type (PLA, PETG, etc.)
-   - Use service `set_spool_weight` with weight in grams
+   - Give it a name (use the text entity)
+   - Choose material type (PLA, PETG, etc.) - density auto-updates
+   - **Set initial weight** using the "Set Weight" number entity (in grams)
+     - This automatically calculates the filament length
 
 2. **Select active spool** and **enable tracking**
 
 3. **Start printing!** Usage is tracked automatically.
+
+### Using the UI
+
+All controls are available directly in the Home Assistant UI:
+
+**Setting up a new spool:**
+- Navigate to the integration's entities
+- Change "Spool X Set Weight" to your filament weight in grams
+- Set the name and material type
+- That's it! Length is calculated automatically
+
+**Managing spools:**
+- **Reset Spool** button - Prepare for a new filament roll
+- **Mark Empty** button - Mark spool as used up
+- **Undo Last Print** button - Restore filament if wrong spool selected
+
+**Quick Dashboard:**
+- Copy the YAML from `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
+- Paste into a new dashboard card
+- Shows all spools with controls and status
 
 ## What You Get
 
@@ -47,13 +68,30 @@ This is a pure Python custom integration - no configuration.yaml editing require
 - Percentage remaining
 - Last print usage
 
-**Services available:**
-- `set_spool_weight` - Set weight, length calculated automatically
-- `reset_spool` - Prepare for new filament roll
-- `undo_last_print` - Restore if wrong spool selected
-- `mark_spool_empty` - Mark spool as used up
+**Controls available:**
+- **Set Weight** number entity - Set weight in grams, length calculated automatically
+- **Reset Spool** button - Prepare for new filament roll
+- **Undo Last Print** button - Restore if wrong spool selected
+- **Mark Empty** button - Mark spool as used up
+
+**Services (for automation):**
+- `centauri_spool_manager.set_spool_weight`
+- `centauri_spool_manager.reset_spool`
+- `centauri_spool_manager.undo_last_print`
+- `centauri_spool_manager.mark_spool_empty`
 
 ## Example: Setting Up Your First Spool
+
+**Using the UI (Recommended):**
+
+1. Go to **Settings → Devices & Services → Centauri Carbon Spool Manager**
+2. Find "Spool 1 Set Weight" and change it to 1000 (grams)
+3. Set "Spool 1 Name" to "Red PLA"
+4. Set "Spool 1 Material" to "PLA"
+5. Set "Active Spool" to "Spool 1"
+6. Turn on "Enable Spool Tracking"
+
+**Using Services (for automation):**
 
 ```yaml
 # 1. Set the weight (calculates length automatically)
@@ -63,14 +101,12 @@ data:
   weight_grams: 1000
 
 # 2. Name it
-# Use the UI or:
 service: text.set_value
 data:
   entity_id: text.centauri_spool_manager_spool_1_name
   value: "Red PLA"
 
 # 3. Select material type
-# Use the UI or:
 service: select.select_option
 data:
   entity_id: select.centauri_spool_manager_spool_1_material
@@ -90,7 +126,14 @@ data:
 
 ## Quick Dashboard
 
-Add this to your dashboard for a simple spool card:
+**Full Dashboard:**
+
+Copy the complete dashboard YAML from:
+`custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
+
+This includes all spools with full controls and status information.
+
+**Simple Single Spool Card:**
 
 ```yaml
 type: entities
@@ -98,17 +141,28 @@ title: Spool 1
 entities:
   - entity: text.centauri_spool_manager_spool_1_name
   - entity: select.centauri_spool_manager_spool_1_material
+  - entity: number.centauri_spool_manager_spool_1_set_weight
+    name: Set Weight
+  - type: divider
   - entity: sensor.centauri_spool_manager_spool_1_remaining_weight
     name: Remaining
   - entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
     name: "%"
+  - type: divider
   - type: button
-    name: Reset for New Spool
+    name: Reset Spool
     tap_action:
       action: call-service
-      service: centauri_spool_manager.reset_spool
-      data:
-        spool_number: 1
+      service: button.press
+      target:
+        entity_id: button.centauri_spool_manager_spool_1_reset
+  - type: button
+    name: Mark Empty
+    tap_action:
+      action: call-service
+      service: button.press
+      target:
+        entity_id: button.centauri_spool_manager_spool_1_mark_empty
 ```
 
 ## Troubleshooting
