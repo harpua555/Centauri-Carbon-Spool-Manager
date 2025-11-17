@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -37,7 +38,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
     def _setup_listeners(self):
         """Set up state change listeners for printer."""
         # Find printer entities
-        entity_registry = self.hass.helpers.entity_registry.async_get(self.hass)
+        entity_registry = er.async_get(self.hass)
 
         # Look for total_extrusion and current_status entities
         self.extrusion_entity = None

@@ -6,15 +6,27 @@ This is a pure Python custom integration - no configuration.yaml editing require
 
 ### Installation
 
+**Option A: HACS (Recommended)**
+
 1. **HACS** → **Integrations** → **⋮** → **Custom repositories**
 2. Add repository: `https://github.com/harpua555/Centauri-Carbon-Spool-Manager`
 3. Category: **Integration**
-4. **Download** and **Restart** Home Assistant
-5. **Settings** → **Devices & Services** → **Add Integration**
-6. Search "**Centauri Carbon Spool Manager**"
-7. Select your printer from the dropdown
-8. Choose number of spools (2-4)
-9. Done!
+4. Click **Download** and **Restart** Home Assistant
+
+**Option B: Manual Installation**
+
+1. Download or clone this repository
+2. Copy the `custom_components/centauri_spool_manager` folder to your Home Assistant
+3. Place it in `/config/custom_components/centauri_spool_manager`
+4. **Restart** Home Assistant
+
+**Either way, then:**
+
+1. **Settings** → **Devices & Services** → **Add Integration**
+2. Search "**Centauri Carbon Spool Manager**"
+3. Select your printer from the dropdown
+4. Choose number of spools (2-4)
+5. Done!
 
 ### First Use
 
