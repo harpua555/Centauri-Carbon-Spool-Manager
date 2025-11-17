@@ -24,68 +24,59 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 
 ## Installation
 
-### Method 1: HACS (Recommended)
+### HACS (Recommended - Almost One-Click!)
 
 1. **Open HACS** in Home Assistant
-2. Click the **three dots menu (⋮)** → **Custom repositories**
-3. **Add repository:**
+2. Click **Integrations**
+3. Click the **three dots menu (⋮)** → **Custom repositories**
+4. **Add repository:**
    - URL: `https://github.com/harpua555/Centauri-Carbon-Spool-Manager`
-   - Category: **Template**
-4. Click **ADD**
-5. Search for "**Centauri Carbon Spool Manager**" in HACS
-6. Click **Download**
-7. **Copy files** to your Home Assistant config:
-   ```bash
-   # Copy both package files
-   cp config/packages/elegoo_spool_manager.yaml /config/packages/
-   cp config/packages/elegoo_spool_history.yaml /config/packages/
-
-   # Copy your preferred dashboard
-   cp config/lovelace-spool-manager.yaml /config/
-   ```
+   - Category: **Integration**
+5. Click **ADD**
+6. Search for "**Centauri Carbon Spool Manager**"
+7. Click **Download**
 8. **Restart** Home Assistant
+9. Go to **Settings** → **Devices & Services**
+10. Click **Add Integration** and search for "**Centauri Carbon Spool Manager**"
+11. Click to add it
+12. Follow the setup wizard
 
-### Method 2: Download ZIP
-
-1. **Download** the latest release:
-   - Go to [Releases](https://github.com/harpua555/Centauri-Carbon-Spool-Manager/releases)
-   - Download `Centauri-Carbon-Spool-Manager.zip`
-
-2. **Extract** the ZIP file
-
-3. **Copy files** to Home Assistant:
-   ```bash
-   # Copy both package files
-   cp config/packages/elegoo_spool_manager.yaml /config/packages/
-   cp config/packages/elegoo_spool_history.yaml /config/packages/
-
-   # Copy your preferred dashboard
-   cp config/lovelace-spool-manager.yaml /config/
-   ```
+The integration will tell you exactly what to do next in the Home Assistant logs!
 
 ## Setup
 
+After installing via HACS, follow these steps to complete the setup:
+
 ### 1. Enable Packages
 
-Add this to your `configuration.yaml` if not already present:
+Add this to your `configuration.yaml`:
 
 ```yaml
 homeassistant:
-  packages: !include_dir_named packages
+  packages: !include_dir_merge_named custom_components/centauri_spool_manager/packages
 ```
 
-### 2. Install Dashboard
+**Note:** This loads the package files directly from the integration directory - no manual file copying needed!
 
-Choose one of these options:
+### 2. Configure Printer Entity Names
 
-#### Option A: Full Dashboard (Recommended)
+Edit the package files to match your printer name:
+- `/config/custom_components/centauri_spool_manager/packages/elegoo_spool_manager.yaml`
+- `/config/custom_components/centauri_spool_manager/packages/elegoo_spool_history.yaml`
 
-Copy the complete dashboard:
-```bash
-cp config/lovelace-spool-manager.yaml /config/
-```
+Replace `centauri_carbon` with your printer name (e.g., `neptune_4`, `my_printer`, etc.)
 
-Then add to your `configuration.yaml`:
+**Find your printer's entity names:**
+1. Go to Developer Tools → States
+2. Search for "extrusion" or "print_status"
+3. Look for entities like: `sensor.YOUR_PRINTER_total_extrusion`
+4. Use that printer name in the package files
+
+### 3. Add Dashboard
+
+**Option A: Full Dashboard (Recommended)**
+
+Add to your `configuration.yaml`:
 ```yaml
 lovelace:
   mode: storage
@@ -95,25 +86,16 @@ lovelace:
       title: Spool Manager
       icon: mdi:printer-3d-nozzle
       show_in_sidebar: true
-      filename: lovelace-spool-manager.yaml
+      filename: custom_components/centauri_spool_manager/dashboards/lovelace-spool-manager.yaml
 ```
 
-#### Option B: Simple Card
+**Option B: Manual Card**
 
-For existing dashboards:
-```bash
-cp config/dashboards/elegoo_spool_manager_simple.yaml /config/dashboards/
-```
-Then add manually via UI: Settings → Dashboards → Edit → Add Card → Manual YAML
+1. Go to your dashboard
+2. Edit Dashboard → Add Card → Manual YAML
+3. Copy contents from `/config/custom_components/centauri_spool_manager/dashboards/elegoo_spool_manager_simple.yaml`
 
-#### Option C: Card with History
-
-Collapsible card with history navigation:
-```bash
-cp config/dashboards/elegoo_spool_manager_with_history.yaml /config/dashboards/
-```
-
-### 3. Restart Home Assistant
+### 4. Restart Home Assistant
 
 ## Configuration
 
@@ -131,30 +113,6 @@ cp config/dashboards/elegoo_spool_manager_with_history.yaml /config/dashboards/
 4. **Select active spool** from dropdown
 5. **Enable tracking**
 
-### Entity Name Customization
-
-**Default configuration** assumes entities like:
-- `sensor.centauri_carbon_current_status`
-- `sensor.centauri_carbon_total_extrusion`
-- `sensor.centauri_carbon_file_name`
-
-**If your printer has a different name**, update references in both package files:
-
-```yaml
-# Find and replace in:
-# - config/packages/elegoo_spool_manager.yaml
-# - config/packages/elegoo_spool_history.yaml
-
-# Replace:
-sensor.centauri_carbon_current_status
-sensor.centauri_carbon_total_extrusion
-sensor.centauri_carbon_file_name
-
-# With your printer name:
-sensor.YOUR_PRINTER_NAME_current_status
-sensor.YOUR_PRINTER_NAME_total_extrusion
-sensor.YOUR_PRINTER_NAME_file_name
-```
 
 ## Usage
 

@@ -1,0 +1,14 @@
+{
+  "title": "Centauri Carbon Spool Manager",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Centauri Carbon Spool Manager",
+        "description": "This will install automatic filament tracking for your 3D printer.\n\n**What gets installed:**\n• 4 spool tracking entities\n• Material & density profiles (PLA, PETG, ABS, TPU, Nylon, ASA)\n• Print history logging\n• Undo last print feature\n• Dashboard configurations\n\n**After installation:**\n1. Still need to add one line to configuration.yaml (shown in logs)\n2. Configure your printer entity names\n3. Add dashboard via UI or configuration.yaml\n\nClick Submit to continue."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance is allowed."
+    }
+  }
+}

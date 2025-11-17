@@ -22,18 +22,24 @@ Track and manage your 3D printer filament spools with automatic usage tracking b
 - [Elegoo Printer Integration](https://github.com/danielcherubini/elegoo-homeassistant) already installed and configured
 - Elegoo FDM printer with extrusion sensor (Centauri Carbon, Neptune 4, etc.)
 
-## Installation via HACS
+## Installation via HACS (One-Click!)
 
 1. Open HACS in Home Assistant
-2. Click the three dots menu (⋮) → **Custom repositories**
-3. Add repository URL: `https://github.com/harpua555/Centauri-Carbon-Spool-Manager`
-4. Select category: **Template**
-5. Click **ADD**
-6. Find "Centauri Carbon Spool Manager" and click **Download**
-7. Copy files to your Home Assistant config directory
+2. Click **Integrations**
+3. Click the three dots menu (⋮) → **Custom repositories**
+4. Add repository URL: `https://github.com/harpua555/Centauri-Carbon-Spool-Manager`
+5. Select category: **Integration**
+6. Click **ADD**
+7. Search for "Centauri Carbon Spool Manager" and click **Download**
 8. Restart Home Assistant
+9. Add to your `configuration.yaml`:
+   ```yaml
+   homeassistant:
+     packages: !include_dir_merge_named custom_components/centauri_spool_manager/packages
+   ```
+10. Configure printer entity names and add dashboard
 
-See the full [README](https://github.com/harpua555/Centauri-Carbon-Spool-Manager/blob/main/README.md) for detailed setup instructions.
+See the full [README](https://github.com/harpua555/Centauri-Carbon-Spool-Manager/blob/main/README.md) for complete setup instructions.
 
 ## What's Included
 
