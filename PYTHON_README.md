@@ -26,19 +26,33 @@ This is a pure Python custom integration - no configuration.yaml editing require
 2. Search "**Centauri Carbon Spool Manager**"
 3. Select your printer from the dropdown
 4. Choose number of spools (2-4)
-5. Done!
+5. Done! A "**Spool Manager**" dashboard is automatically created
 
 ### First Use
 
-1. **Set up a spool:**
-   - Give it a name (use the text entity)
+1. **Open the Spool Manager dashboard** (automatically created in your sidebar)
+
+2. **Configure a spool:**
+   - Navigate to a spool tab (Spool 1, Spool 2, etc.)
+   - Give it a name
    - Choose material type (PLA, PETG, etc.) - density auto-updates
-   - **Set initial weight** using the "Set Weight" number entity (in grams)
-     - This automatically calculates the filament length
+   - **Set initial weight** in grams - length is calculated automatically
+   - **Lock configuration** to prevent accidental changes during printing
 
-2. **Select active spool** and **enable tracking**
+3. **On the Overview tab:**
+   - Select active spool
+   - Enable tracking
 
-3. **Start printing!** Usage is tracked automatically.
+4. **Start printing!** Usage is tracked automatically
+
+### Dashboard Features
+
+The auto-generated dashboard includes:
+- **Overview tab** - All spools at a glance with gauge indicators
+- **Individual spool tabs** - Full configuration and statistics for each spool
+- **Color-coded gauges** - Green (>50%), Yellow (20-50%), Red (<20%)
+- **Lock switches** - Prevent accidental modifications during printing
+- **Quick actions** - Reset, Mark Empty (Quick Reload), Undo Last Print
 
 ### Using the UI
 
@@ -51,28 +65,33 @@ All controls are available directly in the Home Assistant UI:
 - That's it! Length is calculated automatically
 
 **Managing spools:**
-- **Reset Spool** button - Prepare for a new filament roll
-- **Mark Empty** button - Mark spool as used up
+- **Lock/Unlock** - Protect configuration during printing
+- **Reset Spool** button - Clear spool for new filament (auto-unlocks first)
+- **Mark Empty (Quick Reload)** button - Mark as empty and reset with same initial weight
 - **Undo Last Print** button - Restore filament if wrong spool selected
 
-**Quick Dashboard:**
-- Copy the YAML from `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
-- Paste into a new dashboard card
-- Shows all spools with controls and status
+**Dashboard:**
+- Automatically created on installation as "Spool Manager" in your sidebar
+- Shows overview of all spools with gauges
+- Individual tabs for detailed spool configuration
+- If you need to recreate it manually, use the YAML from:
+  `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
 
 ## What You Get
 
 **For each spool, you'll see:**
 - Name, material type, and density settings
+- **Spool state** - ready, configured, active, or empty
 - Remaining filament (length & weight)
-- Percentage remaining
-- Last print usage
+- Percentage remaining with color-coded gauge
+- Last print usage for undo functionality
 
 **Controls available:**
+- **Lock Switch** - Prevent accidental changes during printing
 - **Set Weight** number entity - Set weight in grams, length calculated automatically
-- **Reset Spool** button - Prepare for new filament roll
-- **Undo Last Print** button - Restore if wrong spool selected
-- **Mark Empty** button - Mark spool as used up
+- **Reset Spool** button - Prepare for new filament roll (auto-unlocks)
+- **Mark Empty (Quick Reload)** button - Reset with same initial conditions
+- **Undo Last Print** button - Restore filament if wrong spool selected
 
 **Services (for automation):**
 - `centauri_spool_manager.set_spool_weight`
@@ -82,14 +101,19 @@ All controls are available directly in the Home Assistant UI:
 
 ## Example: Setting Up Your First Spool
 
-**Using the UI (Recommended):**
+**Using the Dashboard (Recommended):**
 
-1. Go to **Settings → Devices & Services → Centauri Carbon Spool Manager**
-2. Find "Spool 1 Set Weight" and change it to 1000 (grams)
-3. Set "Spool 1 Name" to "Red PLA"
-4. Set "Spool 1 Material" to "PLA"
+1. Open the **Spool Manager** dashboard from the sidebar
+2. Click on the **Spool 1** tab
+3. Configure the spool:
+   - Set name to "Red PLA"
+   - Select material "PLA"
+   - Set initial weight to 1000 grams
+   - **Turn on Lock** to protect configuration
+4. Go to **Overview** tab
 5. Set "Active Spool" to "Spool 1"
 6. Turn on "Enable Spool Tracking"
+7. Start printing!
 
 **Using Services (for automation):**
 
@@ -124,16 +148,46 @@ data:
   entity_id: switch.centauri_spool_manager_enable_spool_tracking
 ```
 
-## Quick Dashboard
+## Features Deep Dive
+
+### Lock Protection
+
+The lock switch prevents accidental modifications while printing:
+- When **locked**, you cannot change: name, material, weight, or density
+- Reset and Mark Empty buttons automatically unlock the spool first
+- Recommended workflow: Configure → Lock → Print → Empty → Unlock → Reconfigure
+
+### Quick Reload
+
+The "Mark Empty" button now implements Quick Reload:
+1. Stores current spool configuration (name, material, weight)
+2. Marks the spool as empty
+3. Unlocks the spool
+4. Resets all usage counters
+5. **Restores the initial weight** automatically
+
+This allows you to quickly reload the same filament type without reconfiguring.
+
+### Spool States
+
+Each spool tracks its lifecycle state:
+- **ready** - No configuration yet
+- **configured** - Has weight/material set but not active
+- **active** - Currently selected for printing
+- **empty** - Marked as used up (used ≥ initial length)
+
+## Manual Dashboard Setup
+
+If you need to manually recreate the dashboard:
 
 **Full Dashboard:**
 
 Copy the complete dashboard YAML from:
 `custom_components/centauri_spool_manager/lovelace/dashboard.yaml`
 
-This includes all spools with full controls and status information.
+Then add it as a new dashboard in Home Assistant.
 
-**Simple Single Spool Card:**
+**Simple Single Spool Card (for custom dashboards):**
 
 ```yaml
 type: entities

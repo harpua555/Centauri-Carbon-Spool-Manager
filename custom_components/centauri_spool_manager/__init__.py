@@ -12,8 +12,9 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, PLATFORMS, CONF_NUM_SPOOLS
 from .coordinator import CentauriSpoolCoordinator
+from .dashboard import async_create_dashboard
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -58,6 +59,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Register update listener
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+
+    # Auto-create dashboard
+    num_spools = entry.data.get(CONF_NUM_SPOOLS, 4)
+    dashboard_created = await async_create_dashboard(hass, num_spools)
+    if dashboard_created:
+        _LOGGER.info("Spool Manager dashboard created successfully")
+    else:
+        _LOGGER.warning("Failed to create dashboard - you can add it manually from the YAML file")
 
     _LOGGER.info("Centauri Carbon Spool Manager setup complete")
     return True

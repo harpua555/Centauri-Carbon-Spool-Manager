@@ -106,6 +106,14 @@ class SpoolMaterialSelect(CentauriSelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Update the selected option."""
+        # Check if spool is locked
+        lock_entity_id = f"switch.centauri_spool_manager_spool_{self._spool_num}_lock"
+        lock_state = self.hass.states.get(lock_entity_id)
+
+        if lock_state and lock_state.state == "on":
+            _LOGGER.warning(f"Cannot change Spool {self._spool_num} material - spool is locked")
+            raise ValueError(f"Spool {self._spool_num} is locked. Unlock it before making changes.")
+
         self._attr_current_option = option
         self.async_write_ha_state()
 

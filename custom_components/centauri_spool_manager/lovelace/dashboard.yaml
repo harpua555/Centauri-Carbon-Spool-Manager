@@ -1,181 +1,524 @@
 # Centauri Carbon Spool Manager Dashboard
-# Copy this YAML to your Lovelace dashboard
+# This dashboard is automatically created when you install the integration
+# You can also manually add it via Settings > Dashboards > Add Dashboard
 
-type: vertical-stack
-cards:
-  # Control Panel
-  - type: entities
-    title: Spool Manager Controls
-    entities:
-      - entity: select.centauri_spool_manager_active_spool
-        name: Active Spool
-      - entity: switch.centauri_spool_manager_enable_spool_tracking
-        name: Enable Tracking
+title: Spool Manager
+views:
+  # Overview Tab - All Spools Status
+  - title: Overview
+    path: overview
+    icon: mdi:printer-3d
+    cards:
+      - type: vertical-stack
+        cards:
+          # Global Controls
+          - type: entities
+            title: Spool Manager Controls
+            show_header_toggle: false
+            entities:
+              - entity: select.centauri_spool_manager_active_spool
+                name: Active Spool
+                icon: mdi:printer-3d-nozzle
+              - entity: switch.centauri_spool_manager_enable_spool_tracking
+                name: Enable Automatic Tracking
+                icon: mdi:toggle-switch
+              - entity: number.centauri_spool_manager_filament_diameter
+                name: Filament Diameter
+                icon: mdi:diameter
 
-  # Spool 1
-  - type: entities
-    title: Spool 1
-    entities:
-      - entity: text.centauri_spool_manager_spool_1_name
-        name: Name
-      - entity: select.centauri_spool_manager_spool_1_material
-        name: Material
-      - entity: number.centauri_spool_manager_spool_1_set_weight
-        name: Set Initial Weight
-      - type: divider
-      - entity: sensor.centauri_spool_manager_spool_1_remaining_weight
-        name: Remaining Weight
-      - entity: sensor.centauri_spool_manager_spool_1_remaining_length
-        name: Remaining Length
-      - entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
-        name: Percentage Remaining
-      - entity: sensor.centauri_spool_manager_spool_1_last_print_weight
-        name: Last Print Used
-      - type: divider
-      - type: button
-        name: Reset Spool
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_1_reset
-      - type: button
-        name: Mark Empty
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_1_mark_empty
-      - type: button
-        name: Undo Last Print
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_1_undo_last_print
+          # All Spools Status Grid
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              # Spool 1 Overview
+              - type: vertical-stack
+                cards:
+                  - type: markdown
+                    content: |
+                      ### Spool 1
+                      **{{ states('text.centauri_spool_manager_spool_1_name') or 'Unnamed' }}**
+                      {{ states('select.centauri_spool_manager_spool_1_material') }}
+                  - type: gauge
+                    entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
+                    name: Remaining
+                    needle: true
+                    min: 0
+                    max: 100
+                    severity:
+                      green: 50
+                      yellow: 20
+                      red: 0
+                  - type: horizontal-stack
+                    cards:
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_1_remaining_weight
+                        name: Weight
+                        icon: mdi:weight-gram
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_1_state
+                        name: Status
+                        icon: mdi:state-machine
 
-  # Spool 2
-  - type: entities
-    title: Spool 2
-    entities:
-      - entity: text.centauri_spool_manager_spool_2_name
-        name: Name
-      - entity: select.centauri_spool_manager_spool_2_material
-        name: Material
-      - entity: number.centauri_spool_manager_spool_2_set_weight
-        name: Set Initial Weight
-      - type: divider
-      - entity: sensor.centauri_spool_manager_spool_2_remaining_weight
-        name: Remaining Weight
-      - entity: sensor.centauri_spool_manager_spool_2_remaining_length
-        name: Remaining Length
-      - entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
-        name: Percentage Remaining
-      - entity: sensor.centauri_spool_manager_spool_2_last_print_weight
-        name: Last Print Used
-      - type: divider
-      - type: button
-        name: Reset Spool
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_2_reset
-      - type: button
-        name: Mark Empty
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_2_mark_empty
-      - type: button
-        name: Undo Last Print
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_2_undo_last_print
+              # Spool 2 Overview
+              - type: vertical-stack
+                cards:
+                  - type: markdown
+                    content: |
+                      ### Spool 2
+                      **{{ states('text.centauri_spool_manager_spool_2_name') or 'Unnamed' }}**
+                      {{ states('select.centauri_spool_manager_spool_2_material') }}
+                  - type: gauge
+                    entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
+                    name: Remaining
+                    needle: true
+                    min: 0
+                    max: 100
+                    severity:
+                      green: 50
+                      yellow: 20
+                      red: 0
+                  - type: horizontal-stack
+                    cards:
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_2_remaining_weight
+                        name: Weight
+                        icon: mdi:weight-gram
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_2_state
+                        name: Status
+                        icon: mdi:state-machine
 
-  # Spool 3 (if configured)
-  - type: entities
-    title: Spool 3
-    entities:
-      - entity: text.centauri_spool_manager_spool_3_name
-        name: Name
-      - entity: select.centauri_spool_manager_spool_3_material
-        name: Material
-      - entity: number.centauri_spool_manager_spool_3_set_weight
-        name: Set Initial Weight
-      - type: divider
-      - entity: sensor.centauri_spool_manager_spool_3_remaining_weight
-        name: Remaining Weight
-      - entity: sensor.centauri_spool_manager_spool_3_remaining_length
-        name: Remaining Length
-      - entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
-        name: Percentage Remaining
-      - entity: sensor.centauri_spool_manager_spool_3_last_print_weight
-        name: Last Print Used
-      - type: divider
-      - type: button
-        name: Reset Spool
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_3_reset
-      - type: button
-        name: Mark Empty
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_3_mark_empty
-      - type: button
-        name: Undo Last Print
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_3_undo_last_print
+              # Spool 3 Overview
+              - type: vertical-stack
+                cards:
+                  - type: markdown
+                    content: |
+                      ### Spool 3
+                      **{{ states('text.centauri_spool_manager_spool_3_name') or 'Unnamed' }}**
+                      {{ states('select.centauri_spool_manager_spool_3_material') }}
+                  - type: gauge
+                    entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
+                    name: Remaining
+                    needle: true
+                    min: 0
+                    max: 100
+                    severity:
+                      green: 50
+                      yellow: 20
+                      red: 0
+                  - type: horizontal-stack
+                    cards:
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_3_remaining_weight
+                        name: Weight
+                        icon: mdi:weight-gram
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_3_state
+                        name: Status
+                        icon: mdi:state-machine
 
-  # Spool 4 (if configured)
-  - type: entities
-    title: Spool 4
-    entities:
-      - entity: text.centauri_spool_manager_spool_4_name
-        name: Name
-      - entity: select.centauri_spool_manager_spool_4_material
-        name: Material
-      - entity: number.centauri_spool_manager_spool_4_set_weight
-        name: Set Initial Weight
-      - type: divider
-      - entity: sensor.centauri_spool_manager_spool_4_remaining_weight
-        name: Remaining Weight
-      - entity: sensor.centauri_spool_manager_spool_4_remaining_length
-        name: Remaining Length
-      - entity: sensor.centauri_spool_manager_spool_4_percentage_remaining
-        name: Percentage Remaining
-      - entity: sensor.centauri_spool_manager_spool_4_last_print_weight
-        name: Last Print Used
-      - type: divider
-      - type: button
-        name: Reset Spool
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_4_reset
-      - type: button
-        name: Mark Empty
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_4_mark_empty
-      - type: button
-        name: Undo Last Print
-        tap_action:
-          action: call-service
-          service: button.press
-          target:
-            entity_id: button.centauri_spool_manager_spool_4_undo_last_print
+              # Spool 4 Overview
+              - type: vertical-stack
+                cards:
+                  - type: markdown
+                    content: |
+                      ### Spool 4
+                      **{{ states('text.centauri_spool_manager_spool_4_name') or 'Unnamed' }}**
+                      {{ states('select.centauri_spool_manager_spool_4_material') }}
+                  - type: gauge
+                    entity: sensor.centauri_spool_manager_spool_4_percentage_remaining
+                    name: Remaining
+                    needle: true
+                    min: 0
+                    max: 100
+                    severity:
+                      green: 50
+                      yellow: 20
+                      red: 0
+                  - type: horizontal-stack
+                    cards:
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_4_remaining_weight
+                        name: Weight
+                        icon: mdi:weight-gram
+                      - type: entity
+                        entity: sensor.centauri_spool_manager_spool_4_state
+                        name: Status
+                        icon: mdi:state-machine
+
+  # Spool 1 Configuration Tab
+  - title: Spool 1
+    path: spool1
+    icon: mdi:numeric-1-circle
+    cards:
+      - type: vertical-stack
+        cards:
+          # Configuration Section
+          - type: entities
+            title: Spool 1 Configuration
+            show_header_toggle: false
+            entities:
+              - entity: switch.centauri_spool_manager_spool_1_lock
+                name: Lock Configuration
+                icon: mdi:lock
+              - type: divider
+              - entity: text.centauri_spool_manager_spool_1_name
+                name: Spool Name
+              - entity: select.centauri_spool_manager_spool_1_material
+                name: Material Type
+              - entity: number.centauri_spool_manager_spool_1_set_weight
+                name: Initial Weight
+              - entity: number.centauri_spool_manager_spool_1_density
+                name: Material Density
+
+          # Status Gauges
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
+                name: Remaining %
+                needle: true
+                min: 0
+                max: 100
+                severity:
+                  green: 50
+                  yellow: 20
+                  red: 0
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_1_remaining_weight
+                name: Weight (g)
+                needle: false
+                min: 0
+                max: 1000
+                severity:
+                  green: 500
+                  yellow: 200
+                  red: 0
+
+          # Detailed Stats
+          - type: entities
+            title: Spool 1 Statistics
+            show_header_toggle: false
+            entities:
+              - entity: sensor.centauri_spool_manager_spool_1_state
+                name: Status
+                icon: mdi:state-machine
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_1_initial_weight
+                name: Initial Weight
+              - entity: sensor.centauri_spool_manager_spool_1_remaining_weight
+                name: Remaining Weight
+              - entity: sensor.centauri_spool_manager_spool_1_used_weight
+                name: Used Weight
+              - type: divider
+              - entity: number.centauri_spool_manager_spool_1_initial_length
+                name: Initial Length
+              - entity: sensor.centauri_spool_manager_spool_1_remaining_length
+                name: Remaining Length
+              - entity: number.centauri_spool_manager_spool_1_used_length
+                name: Used Length
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_1_last_print_weight
+                name: Last Print Used
+
+          # Action Buttons
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: button.centauri_spool_manager_spool_1_reset
+                name: Reset Spool
+                icon: mdi:refresh
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_1_mark_empty
+                name: Mark Empty (Quick Reload)
+                icon: mdi:checkbox-blank-circle-outline
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_1_undo_last_print
+                name: Undo Last Print
+                icon: mdi:undo
+                tap_action:
+                  action: toggle
+
+  # Spool 2 Configuration Tab
+  - title: Spool 2
+    path: spool2
+    icon: mdi:numeric-2-circle
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: Spool 2 Configuration
+            show_header_toggle: false
+            entities:
+              - entity: switch.centauri_spool_manager_spool_2_lock
+                name: Lock Configuration
+                icon: mdi:lock
+              - type: divider
+              - entity: text.centauri_spool_manager_spool_2_name
+                name: Spool Name
+              - entity: select.centauri_spool_manager_spool_2_material
+                name: Material Type
+              - entity: number.centauri_spool_manager_spool_2_set_weight
+                name: Initial Weight
+              - entity: number.centauri_spool_manager_spool_2_density
+                name: Material Density
+
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
+                name: Remaining %
+                needle: true
+                min: 0
+                max: 100
+                severity:
+                  green: 50
+                  yellow: 20
+                  red: 0
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_2_remaining_weight
+                name: Weight (g)
+                needle: false
+                min: 0
+                max: 1000
+                severity:
+                  green: 500
+                  yellow: 200
+                  red: 0
+
+          - type: entities
+            title: Spool 2 Statistics
+            show_header_toggle: false
+            entities:
+              - entity: sensor.centauri_spool_manager_spool_2_state
+                name: Status
+                icon: mdi:state-machine
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_2_initial_weight
+                name: Initial Weight
+              - entity: sensor.centauri_spool_manager_spool_2_remaining_weight
+                name: Remaining Weight
+              - entity: sensor.centauri_spool_manager_spool_2_used_weight
+                name: Used Weight
+              - type: divider
+              - entity: number.centauri_spool_manager_spool_2_initial_length
+                name: Initial Length
+              - entity: sensor.centauri_spool_manager_spool_2_remaining_length
+                name: Remaining Length
+              - entity: number.centauri_spool_manager_spool_2_used_length
+                name: Used Length
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_2_last_print_weight
+                name: Last Print Used
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: button.centauri_spool_manager_spool_2_reset
+                name: Reset Spool
+                icon: mdi:refresh
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_2_mark_empty
+                name: Mark Empty (Quick Reload)
+                icon: mdi:checkbox-blank-circle-outline
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_2_undo_last_print
+                name: Undo Last Print
+                icon: mdi:undo
+                tap_action:
+                  action: toggle
+
+  # Spool 3 Configuration Tab
+  - title: Spool 3
+    path: spool3
+    icon: mdi:numeric-3-circle
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: Spool 3 Configuration
+            show_header_toggle: false
+            entities:
+              - entity: switch.centauri_spool_manager_spool_3_lock
+                name: Lock Configuration
+                icon: mdi:lock
+              - type: divider
+              - entity: text.centauri_spool_manager_spool_3_name
+                name: Spool Name
+              - entity: select.centauri_spool_manager_spool_3_material
+                name: Material Type
+              - entity: number.centauri_spool_manager_spool_3_set_weight
+                name: Initial Weight
+              - entity: number.centauri_spool_manager_spool_3_density
+                name: Material Density
+
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
+                name: Remaining %
+                needle: true
+                min: 0
+                max: 100
+                severity:
+                  green: 50
+                  yellow: 20
+                  red: 0
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_3_remaining_weight
+                name: Weight (g)
+                needle: false
+                min: 0
+                max: 1000
+                severity:
+                  green: 500
+                  yellow: 200
+                  red: 0
+
+          - type: entities
+            title: Spool 3 Statistics
+            show_header_toggle: false
+            entities:
+              - entity: sensor.centauri_spool_manager_spool_3_state
+                name: Status
+                icon: mdi:state-machine
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_3_initial_weight
+                name: Initial Weight
+              - entity: sensor.centauri_spool_manager_spool_3_remaining_weight
+                name: Remaining Weight
+              - entity: sensor.centauri_spool_manager_spool_3_used_weight
+                name: Used Weight
+              - type: divider
+              - entity: number.centauri_spool_manager_spool_3_initial_length
+                name: Initial Length
+              - entity: sensor.centauri_spool_manager_spool_3_remaining_length
+                name: Remaining Length
+              - entity: number.centauri_spool_manager_spool_3_used_length
+                name: Used Length
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_3_last_print_weight
+                name: Last Print Used
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: button.centauri_spool_manager_spool_3_reset
+                name: Reset Spool
+                icon: mdi:refresh
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_3_mark_empty
+                name: Mark Empty (Quick Reload)
+                icon: mdi:checkbox-blank-circle-outline
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_3_undo_last_print
+                name: Undo Last Print
+                icon: mdi:undo
+                tap_action:
+                  action: toggle
+
+  # Spool 4 Configuration Tab
+  - title: Spool 4
+    path: spool4
+    icon: mdi:numeric-4-circle
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            title: Spool 4 Configuration
+            show_header_toggle: false
+            entities:
+              - entity: switch.centauri_spool_manager_spool_4_lock
+                name: Lock Configuration
+                icon: mdi:lock
+              - type: divider
+              - entity: text.centauri_spool_manager_spool_4_name
+                name: Spool Name
+              - entity: select.centauri_spool_manager_spool_4_material
+                name: Material Type
+              - entity: number.centauri_spool_manager_spool_4_set_weight
+                name: Initial Weight
+              - entity: number.centauri_spool_manager_spool_4_density
+                name: Material Density
+
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_4_percentage_remaining
+                name: Remaining %
+                needle: true
+                min: 0
+                max: 100
+                severity:
+                  green: 50
+                  yellow: 20
+                  red: 0
+              - type: gauge
+                entity: sensor.centauri_spool_manager_spool_4_remaining_weight
+                name: Weight (g)
+                needle: false
+                min: 0
+                max: 1000
+                severity:
+                  green: 500
+                  yellow: 200
+                  red: 0
+
+          - type: entities
+            title: Spool 4 Statistics
+            show_header_toggle: false
+            entities:
+              - entity: sensor.centauri_spool_manager_spool_4_state
+                name: Status
+                icon: mdi:state-machine
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_4_initial_weight
+                name: Initial Weight
+              - entity: sensor.centauri_spool_manager_spool_4_remaining_weight
+                name: Remaining Weight
+              - entity: sensor.centauri_spool_manager_spool_4_used_weight
+                name: Used Weight
+              - type: divider
+              - entity: number.centauri_spool_manager_spool_4_initial_length
+                name: Initial Length
+              - entity: sensor.centauri_spool_manager_spool_4_remaining_length
+                name: Remaining Length
+              - entity: number.centauri_spool_manager_spool_4_used_length
+                name: Used Length
+              - type: divider
+              - entity: sensor.centauri_spool_manager_spool_4_last_print_weight
+                name: Last Print Used
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: button.centauri_spool_manager_spool_4_reset
+                name: Reset Spool
+                icon: mdi:refresh
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_4_mark_empty
+                name: Mark Empty (Quick Reload)
+                icon: mdi:checkbox-blank-circle-outline
+                tap_action:
+                  action: toggle
+              - type: button
+                entity: button.centauri_spool_manager_spool_4_undo_last_print
+                name: Undo Last Print
+                icon: mdi:undo
+                tap_action:
+                  action: toggle

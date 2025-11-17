@@ -45,6 +45,16 @@ class SpoolResetButton(ButtonEntity):
 
     async def async_press(self) -> None:
         """Handle the button press."""
+        # Unlock spool before reset
+        lock_entity_id = f"switch.centauri_spool_manager_spool_{self._spool_num}_lock"
+        await self.hass.services.async_call(
+            "switch",
+            "turn_off",
+            {"entity_id": lock_entity_id},
+            blocking=True,
+        )
+
+        # Reset the spool
         await self.hass.services.async_call(
             DOMAIN,
             "reset_spool",
@@ -64,13 +74,50 @@ class SpoolMarkEmptyButton(ButtonEntity):
         self._attr_icon = "mdi:checkbox-blank-circle-outline"
 
     async def async_press(self) -> None:
-        """Handle the button press."""
+        """Handle the button press - implements Quick Reload."""
+        # Store current configuration for quick reload
+        name_entity = f"text.centauri_spool_manager_spool_{self._spool_num}_name"
+        material_entity = f"select.centauri_spool_manager_spool_{self._spool_num}_material"
+        weight_entity = f"number.centauri_spool_manager_spool_{self._spool_num}_set_weight"
+
+        name_state = self.hass.states.get(name_entity)
+        material_state = self.hass.states.get(material_entity)
+        weight_state = self.hass.states.get(weight_entity)
+
+        # Mark empty
         await self.hass.services.async_call(
             DOMAIN,
             "mark_spool_empty",
             {"spool_number": self._spool_num},
             blocking=True,
         )
+
+        # Quick Reload: Reset with same configuration
+        # Unlock spool
+        lock_entity_id = f"switch.centauri_spool_manager_spool_{self._spool_num}_lock"
+        await self.hass.services.async_call(
+            "switch",
+            "turn_off",
+            {"entity_id": lock_entity_id},
+            blocking=True,
+        )
+
+        # Reset the spool
+        await self.hass.services.async_call(
+            DOMAIN,
+            "reset_spool",
+            {"spool_number": self._spool_num},
+            blocking=True,
+        )
+
+        # Restore previous configuration if it existed
+        if weight_state and weight_state.state not in ("unknown", "unavailable"):
+            await self.hass.services.async_call(
+                DOMAIN,
+                "set_spool_weight",
+                {"spool_number": self._spool_num, "weight_grams": float(weight_state.state)},
+                blocking=True,
+            )
 
 
 class SpoolUndoButton(ButtonEntity):

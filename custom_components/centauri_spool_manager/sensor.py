@@ -35,6 +35,7 @@ async def async_setup_entry(
             SpoolUsedWeightSensor(hass, entry.entry_id, i),
             SpoolPercentageRemainingSensor(hass, entry.entry_id, i),
             SpoolLastPrintWeightSensor(hass, entry.entry_id, i),
+            SpoolStateSensor(hass, entry.entry_id, i),
         ])
 
     async_add_entities(entities)
@@ -278,3 +279,89 @@ class SpoolLastPrintWeightSensor(CentauriSensorEntity):
         weight_g = volume_cm3 * density
 
         self._attr_native_value = round(weight_g, 2)
+
+
+class SpoolStateSensor(SensorEntity):
+    """Sensor to track spool state (ready, configured, active, empty)."""
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_icon = "mdi:state-machine"
+
+    def __init__(self, hass: HomeAssistant, entry_id: str, spool_num: int):
+        """Initialize state sensor."""
+        self.hass = hass
+        self._entry_id = entry_id
+        self._spool_num = spool_num
+        self._attr_unique_id = f"{entry_id}_spool_{spool_num}_state"
+        self._attr_name = f"Centauri Spool Manager Spool {spool_num} State"
+        self._attr_native_value = "ready"
+
+    @property
+    def device_info(self):
+        """Return device info."""
+        return {
+            "identifiers": {(DOMAIN, self._entry_id)},
+            "name": "Centauri Spool Manager",
+            "manufacturer": "Centauri",
+            "model": "Spool Manager",
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """Register state change listeners."""
+        # Track relevant entities
+        entities_to_track = [
+            f"number.centauri_spool_manager_spool_{self._spool_num}_initial_length",
+            f"number.centauri_spool_manager_spool_{self._spool_num}_used_length",
+            f"switch.centauri_spool_manager_spool_{self._spool_num}_lock",
+            f"select.centauri_spool_manager_active_spool",
+        ]
+
+        async_track_state_change_event(
+            self.hass, entities_to_track, self._handle_state_change
+        )
+
+        # Calculate initial state
+        self._update_state()
+
+    @callback
+    def _handle_state_change(self, event):
+        """Handle state changes of tracked entities."""
+        self._update_state()
+
+    def _update_state(self):
+        """Calculate current spool state."""
+        # Get entity states
+        initial_length_state = self.hass.states.get(
+            f"number.centauri_spool_manager_spool_{self._spool_num}_initial_length"
+        )
+        used_length_state = self.hass.states.get(
+            f"number.centauri_spool_manager_spool_{self._spool_num}_used_length"
+        )
+        lock_state = self.hass.states.get(
+            f"switch.centauri_spool_manager_spool_{self._spool_num}_lock"
+        )
+        active_spool_state = self.hass.states.get(
+            "select.centauri_spool_manager_active_spool"
+        )
+
+        # Determine state
+        if not initial_length_state or initial_length_state.state in ("unknown", "unavailable"):
+            self._attr_native_value = "ready"
+        else:
+            initial_length = float(initial_length_state.state)
+            used_length = float(used_length_state.state) if used_length_state and used_length_state.state not in ("unknown", "unavailable") else 0
+
+            # Check if empty
+            if used_length >= initial_length and initial_length > 0:
+                self._attr_native_value = "empty"
+            # Check if active
+            elif active_spool_state and active_spool_state.state == f"Spool {self._spool_num}":
+                self._attr_native_value = "active"
+            # Check if configured
+            elif initial_length > 0:
+                self._attr_native_value = "configured"
+            else:
+                self._attr_native_value = "ready"
+
+        self.async_write_ha_state()

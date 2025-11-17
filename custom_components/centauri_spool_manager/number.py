@@ -210,6 +210,14 @@ class SpoolSetWeightNumber(NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         """Set weight and call service to calculate length."""
+        # Check if spool is locked
+        lock_entity_id = f"switch.centauri_spool_manager_spool_{self._spool_num}_lock"
+        lock_state = self.hass.states.get(lock_entity_id)
+
+        if lock_state and lock_state.state == "on":
+            _LOGGER.warning(f"Cannot change Spool {self._spool_num} weight - spool is locked")
+            raise ValueError(f"Spool {self._spool_num} is locked. Unlock it before making changes.")
+
         self._attr_native_value = value
         self.async_write_ha_state()
 
