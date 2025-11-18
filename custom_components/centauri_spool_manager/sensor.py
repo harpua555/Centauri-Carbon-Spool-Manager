@@ -22,7 +22,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up sensor entities."""
-    num_spools = entry.data.get(CONF_NUM_SPOOLS, 4)
+    num_spools = entry.options.get(CONF_NUM_SPOOLS, entry.data.get(CONF_NUM_SPOOLS, 4))
 
     entities = []
 
@@ -56,6 +56,9 @@ class CentauriSensorEntity(SensorEntity):
 
         self._attr_unique_id = f"{entry_id}_spool_{spool_num}_{sensor_type}"
         self._attr_name = f"Spool {spool_num} {sensor_type.replace('_', ' ').title()}"
+
+        # Explicit entity_id so dashboard/docs can reference it
+        self.entity_id = f"sensor.{DOMAIN}_spool_{spool_num}_{sensor_type}"
 
         # Track related entities for updates
         self._tracked_entities = []
@@ -296,6 +299,7 @@ class SpoolStateSensor(SensorEntity):
         self._attr_unique_id = f"{entry_id}_spool_{spool_num}_state"
         self._attr_name = f"Spool {spool_num} State"
         self._attr_native_value = "ready"
+        self.entity_id = f"sensor.{DOMAIN}_spool_{spool_num}_state"
 
     @property
     def device_info(self):

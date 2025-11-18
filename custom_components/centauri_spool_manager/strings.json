@@ -76,6 +76,32 @@
           "description": "Initial weight of the filament in grams"
         }
       }
+    },
+    "setup_spool": {
+      "name": "Setup Spool",
+      "description": "Wizard-style service that unlocks, configures, and optionally locks a spool in one call",
+      "fields": {
+        "spool_number": {
+          "name": "Spool Number",
+          "description": "Which spool to configure (1-4)"
+        },
+        "name": {
+          "name": "Spool Name",
+          "description": "Name to assign to the spool"
+        },
+        "material": {
+          "name": "Material Type",
+          "description": "Material profile to use (PLA, PETG, ABS, etc.)"
+        },
+        "weight_grams": {
+          "name": "Weight (grams)",
+          "description": "Initial weight of the filament in grams"
+        },
+        "auto_lock": {
+          "name": "Auto-Lock",
+          "description": "Lock the spool immediately after configuration"
+        }
+      }
     }
   }
 }

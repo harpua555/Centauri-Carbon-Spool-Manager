@@ -64,3 +64,47 @@ set_spool_weight:
           step: 1
           unit_of_measurement: "g"
           mode: box
+
+setup_spool:
+  name: Setup Spool (Wizard)
+  description: Configure a spool in one step (name, material, weight, and optional auto-lock)
+  fields:
+    spool_number:
+      name: Spool Number
+      description: Which spool to configure (1-4)
+      required: true
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+    name:
+      name: Spool Name
+      description: Name to assign to the spool
+      required: true
+      selector:
+        text: {}
+    material:
+      name: Material Type
+      description: Material profile to use (PLA, PETG, ABS, etc.)
+      required: true
+      selector:
+        text: {}
+    weight_grams:
+      name: Weight (grams)
+      description: Initial filament weight in grams
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 1
+          unit_of_measurement: "g"
+          mode: box
+    auto_lock:
+      name: Auto-Lock After Setup
+      description: Lock the spool immediately after configuration
+      required: false
+      default: true
+      selector:
+        boolean: {}

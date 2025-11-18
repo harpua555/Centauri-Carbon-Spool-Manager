@@ -16,18 +16,112 @@ from .const import DOMAIN, CONF_NUM_SPOOLS
 _LOGGER = logging.getLogger(__name__)
 
 
+class NewSpoolSlotNumber(NumberEntity, RestoreEntity):
+    """Number entity for selecting which spool slot to add to."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:numeric"
+    _attr_native_min_value = 1
+    _attr_native_max_value = 4
+    _attr_native_step = 1
+    _attr_mode = NumberMode.SLIDER
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str):
+        """Initialize the number."""
+        self._entry_id = entry_id
+        self._attr_unique_id = f"{entry_id}_new_spool_slot"
+        self._attr_name = "Centauri Spool Manager New Spool Slot"
+        self._attr_native_value = 1
+        # Align entity_id with documentation/dashboard and button helper
+        self.entity_id = "number.centauri_spool_manager_new_spool_slot"
+
+    @property
+    def device_info(self):
+        """Return device info."""
+        return {
+            "identifiers": {(DOMAIN, self._entry_id)},
+            "name": "Centauri Spool Manager",
+            "manufacturer": "Centauri",
+            "model": "Spool Manager",
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last state."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_state()) is not None:
+            if last_state.state not in ("unknown", "unavailable"):
+                self._attr_native_value = float(last_state.state)
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Update the value."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
+class NewSpoolWeightNumber(NumberEntity, RestoreEntity):
+    """Number entity for new spool weight."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:weight-gram"
+    _attr_native_min_value = 100
+    _attr_native_max_value = 5000
+    _attr_native_step = 50
+    _attr_mode = NumberMode.BOX
+    _attr_native_unit_of_measurement = "g"
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str):
+        """Initialize the number."""
+        self._entry_id = entry_id
+        self._attr_unique_id = f"{entry_id}_new_spool_weight"
+        self._attr_name = "Centauri Spool Manager New Spool Weight"
+        self._attr_native_value = 1000
+        self.entity_id = "number.centauri_spool_manager_new_spool_weight"
+
+    @property
+    def device_info(self):
+        """Return device info."""
+        return {
+            "identifiers": {(DOMAIN, self._entry_id)},
+            "name": "Centauri Spool Manager",
+            "manufacturer": "Centauri",
+            "model": "Spool Manager",
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last state."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_state()) is not None:
+            if last_state.state not in ("unknown", "unavailable"):
+                self._attr_native_value = float(last_state.state)
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Update the value."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
+_LOGGER = logging.getLogger(__name__)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up number entities."""
-    num_spools = entry.data.get(CONF_NUM_SPOOLS, 4)
+    # Options override initial config for number of spools
+    num_spools = entry.options.get(CONF_NUM_SPOOLS, entry.data.get(CONF_NUM_SPOOLS, 4))
 
     entities = []
 
     # Global filament diameter
     entities.append(FilamentDiameterNumber(entry.entry_id))
+
+    # Add Spool form helpers
+    entities.append(NewSpoolSlotNumber(entry.entry_id))
+    entities.append(NewSpoolWeightNumber(entry.entry_id))
 
     # Per-spool entities
     for i in range(1, num_spools + 1):
@@ -56,9 +150,12 @@ class CentauriNumberEntity(NumberEntity, RestoreEntity):
         if spool_num:
             self._attr_unique_id = f"{entry_id}_spool_{spool_num}_{number_type}"
             self._attr_name = f"Spool {spool_num} {number_type.replace('_', ' ').title()}"
+            # Explicit entity_id so other platforms/services can reference it
+            self.entity_id = f"number.{DOMAIN}_spool_{spool_num}_{number_type}"
         else:
             self._attr_unique_id = f"{entry_id}_{number_type}"
-            self._attr_name = number_type.replace('_', ' ').title()
+            self._attr_name = number_type.replace("_", " ").title()
+            self.entity_id = f"number.{DOMAIN}_{number_type}"
 
         self._attr_native_value = None
 
@@ -95,6 +192,8 @@ class FilamentDiameterNumber(CentauriNumberEntity):
         """Initialize filament diameter."""
         super().__init__(entry_id, "filament_diameter")
         self._attr_native_value = 1.75
+        # Ensure global filament diameter entity_id matches usage
+        self.entity_id = "number.centauri_spool_manager_filament_diameter"
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the value."""
@@ -204,9 +303,11 @@ class SpoolSetWeightNumber(NumberEntity):
         self.hass = hass
         self._entry_id = entry_id
         self._spool_num = spool_num
-        self._attr_unique_id = f"centauri_spool_manager_spool_{spool_num}_set_weight"
+        self._attr_unique_id = f"{DOMAIN}_spool_{spool_num}_set_weight"
         self._attr_name = f"Centauri Spool Manager Spool {spool_num} Set Weight"
         self._attr_native_value = 1000  # Default 1kg
+        # Explicit entity_id so services and dashboard can reference it
+        self.entity_id = f"number.{DOMAIN}_spool_{spool_num}_set_weight"
 
     async def async_set_native_value(self, value: float) -> None:
         """Set weight and call service to calculate length."""

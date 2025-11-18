@@ -43,7 +43,8 @@ class CentauriSpoolManagerConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            self.printer_device_id = user_input[CONF_PRINTER_DEVICE]
+            # Printer selection is optional when no compatible devices are found
+            self.printer_device_id = user_input.get(CONF_PRINTER_DEVICE)
             self.num_spools = user_input.get(CONF_NUM_SPOOLS, 4)
 
             # Move to confirmation step

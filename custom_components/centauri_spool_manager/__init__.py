@@ -68,8 +68,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Register update listener
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
-    # Auto-create dashboard
-    num_spools = entry.data.get(CONF_NUM_SPOOLS, 4)
+    # Auto-create dashboard (respect options override)
+    num_spools = entry.options.get(CONF_NUM_SPOOLS, entry.data.get(CONF_NUM_SPOOLS, 4))
     dashboard_created = await async_create_dashboard(hass, num_spools)
     if dashboard_created:
         _LOGGER.info("Spool Manager dashboard created successfully")

@@ -6,10 +6,55 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import DOMAIN, CONF_NUM_SPOOLS, MATERIAL_TYPES, MATERIAL_DENSITIES
+
+_LOGGER = logging.getLogger(__name__)
+
+
+class NewSpoolMaterialSelect(SelectEntity, RestoreEntity):
+    """Select entity for new spool material."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:palette"
+    # Use the shared material type list from const.py
+    _attr_options = MATERIAL_TYPES
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str):
+        """Initialize the select entity."""
+        self._entry_id = entry_id
+        self._attr_unique_id = f"{entry_id}_new_spool_material"
+        self._attr_name = "Centauri Spool Manager New Spool Material"
+        # Explicit entity_id so it matches documentation and dashboard YAML
+        self.entity_id = "select.centauri_spool_manager_new_spool_material"
+        self._attr_current_option = "PLA"
+
+    @property
+    def device_info(self):
+        """Return device info."""
+        return {
+            "identifiers": {(DOMAIN, self._entry_id)},
+            "name": "Centauri Spool Manager",
+            "manufacturer": "Centauri",
+            "model": "Spool Manager",
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """Restore last state."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_state()) is not None:
+            if last_state.state in self._attr_options:
+                self._attr_current_option = last_state.state
+
+    async def async_select_option(self, option: str) -> None:
+        """Update the selected option."""
+        self._attr_current_option = option
+        self.async_write_ha_state()
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,9 +65,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up select entities."""
-    num_spools = entry.data.get(CONF_NUM_SPOOLS, 4)
+    num_spools = entry.options.get(CONF_NUM_SPOOLS, entry.data.get(CONF_NUM_SPOOLS, 4))
 
     entities = []
+
+    # Add Spool form helper
+    entities.append(NewSpoolMaterialSelect(entry.entry_id))
 
     # Active spool selector
     entities.append(ActiveSpoolSelect(entry.entry_id, num_spools))
@@ -48,9 +96,12 @@ class CentauriSelectEntity(SelectEntity, RestoreEntity):
         if spool_num:
             self._attr_unique_id = f"{entry_id}_spool_{spool_num}_{select_type}"
             self._attr_name = f"Spool {spool_num} {select_type.replace('_', ' ').title()}"
+            # sensor/select/text/number/button/switch IDs are all prefixed
+            self.entity_id = f"select.{DOMAIN}_spool_{spool_num}_{select_type}"
         else:
             self._attr_unique_id = f"{entry_id}_{select_type}"
-            self._attr_name = select_type.replace('_', ' ').title()
+            self._attr_name = select_type.replace("_", " ").title()
+            self.entity_id = f"select.{DOMAIN}_{select_type}"
 
         self._attr_current_option = None
 

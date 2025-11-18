@@ -42,7 +42,17 @@ After installing the integration, add the dashboard:
 
 **Spools start locked by default** to prevent accidental changes.
 
-**Option A: Using the Setup Service (Recommended)**
+**Option A: Using the Add Spool Form (Easiest)**
+
+Use the "Add New Spool" form on the Overview tab of the dashboard:
+1. Select spool slot (1-4)
+2. Enter name (e.g., "Red PLA")
+3. Select material type
+4. Enter weight in grams
+5. Click "Add New Spool" button
+6. Done! The spool is configured and locked automatically
+
+**Option B: Using the Setup Service**
 
 Use the `setup_spool` service to configure everything at once:
 
@@ -58,7 +68,7 @@ data:
 
 This automatically unlocks, configures, and locks the spool.
 
-**Option B: Manual Configuration**
+**Option C: Manual Configuration**
 
 1. Click "Reset Spool" button to unlock
 2. Configure name, material, and weight

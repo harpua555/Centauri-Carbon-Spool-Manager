@@ -11,6 +11,25 @@ views:
     cards:
       - type: vertical-stack
         cards:
+          # Quick Add Spool Form
+          - type: entities
+            title: "➕ Add New Spool"
+            show_header_toggle: false
+            entities:
+              - entity: number.centauri_spool_manager_new_spool_slot
+                name: Spool Slot (1-4)
+              - entity: text.centauri_spool_manager_new_spool_name
+                name: Name
+              - entity: select.centauri_spool_manager_new_spool_material
+                name: Material
+              - entity: number.centauri_spool_manager_new_spool_weight
+                name: Weight (g)
+              - entity: switch.centauri_spool_manager_new_spool_auto_lock
+                name: Auto-lock after setup
+              - entity: button.centauri_spool_manager_add_new_spool
+                name: Add Spool
+                icon: mdi:plus-circle
+
           # Global Controls
           - type: entities
             title: Spool Manager Controls
