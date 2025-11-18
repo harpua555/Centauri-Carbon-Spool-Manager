@@ -70,9 +70,10 @@ async def async_setup_entry(
     # Add Spool form helper
     entities.append(NewSpoolNameText(entry.entry_id))
 
-    # Per-spool name entities
+    # Per-spool name and history entities
     for i in range(1, num_spools + 1):
         entities.append(SpoolNameText(entry.entry_id, i))
+        entities.append(SpoolHistoryText(entry.entry_id, i))
 
     # Current print spool tracking
     entities.append(CurrentPrintSpoolText(entry.entry_id))
@@ -161,3 +162,16 @@ class CurrentPrintSpoolText(CentauriTextEntity):
         """Update the value."""
         self._attr_native_value = value
         self.async_write_ha_state()
+
+
+class SpoolHistoryText(CentauriTextEntity):
+    """Per-spool print history stored as JSON."""
+
+    _attr_icon = "mdi:history"
+    _attr_max_length = 2048
+
+    def __init__(self, entry_id: str, spool_num: int):
+        """Initialize spool history."""
+        super().__init__(entry_id, "history", spool_num)
+        # Store history as JSON list of entries
+        self._attr_native_value = "[]"

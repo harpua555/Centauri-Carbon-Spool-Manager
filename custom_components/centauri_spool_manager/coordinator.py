@@ -1,8 +1,9 @@
 """Data coordinator for Centauri Carbon Spool Manager."""
 from __future__ import annotations
 
+import json
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
@@ -40,9 +41,10 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         # Find printer entities
         entity_registry = er.async_get(self.hass)
 
-        # Look for total_extrusion and current_status entities
+        # Look for total_extrusion, current_status and file_name entities
         self.extrusion_entity = None
         self.status_entity = None
+        self.file_name_entity = None
 
         for entity in entity_registry.entities.values():
             if entity.device_id == self.printer_device_id:
@@ -50,6 +52,8 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                     self.extrusion_entity = entity.entity_id
                 elif entity.entity_id.endswith("_current_status"):
                     self.status_entity = entity.entity_id
+                elif entity.entity_id.endswith("_file_name"):
+                    self.file_name_entity = entity.entity_id
 
         if not self.extrusion_entity or not self.status_entity:
             _LOGGER.warning("Could not find printer extrusion or status entities")
@@ -209,7 +213,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                     blocking=True,
                 )
 
-                # Log to history
+                # Log to history (logbook)
                 spool_name_state = self.hass.states.get(f"text.centauri_spool_manager_spool_{spool_num}_name")
                 spool_name = spool_name_state.state if spool_name_state else f"Spool {spool_num}"
 
@@ -223,9 +227,79 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                     blocking=False,
                 )
 
+                # Append to per-spool print history entity
+                await self._append_print_history(spool_num, spool_name, extruded_length)
+
         # Reset tracking state
         self._print_start_extrusion = 0
         self._active_spool = None
+
+    async def _append_print_history(self, spool_num: str, spool_name: str, extruded_length: float) -> None:
+        """Append a completed print entry to the spool's history text entity."""
+        history_entity_id = f"text.centauri_spool_manager_spool_{spool_num}_history"
+        history_state = self.hass.states.get(history_entity_id)
+
+        # Decode existing JSON list (if any)
+        entries = []
+        if history_state and history_state.state not in ("unknown", "unavailable", ""):
+            try:
+                data = json.loads(history_state.state)
+                if isinstance(data, list):
+                    entries = data
+            except (ValueError, TypeError):
+                _LOGGER.warning("Spool %s history contained invalid JSON, resetting", spool_num)
+
+        # Determine file name if available
+        file_name = "Unknown"
+        if self.file_name_entity:
+            file_state = self.hass.states.get(self.file_name_entity)
+            if file_state and file_state.state not in ("unknown", "unavailable"):
+                file_name = file_state.state
+
+        # Compute approximate weight in grams
+        density_state = self.hass.states.get(f"number.centauri_spool_manager_spool_{spool_num}_density")
+        diameter_state = self.hass.states.get("number.centauri_spool_manager_filament_diameter")
+
+        density = 1.24
+        diameter = 1.75
+        if density_state and density_state.state not in ("unknown", "unavailable"):
+            try:
+                density = float(density_state.state)
+            except (ValueError, TypeError):
+                pass
+        if diameter_state and diameter_state.state not in ("unknown", "unavailable"):
+            try:
+                diameter = float(diameter_state.state)
+            except (ValueError, TypeError):
+                pass
+
+        radius_mm = diameter / 2
+        volume_mm3 = 3.14159265359 * (radius_mm ** 2) * extruded_length
+        volume_cm3 = volume_mm3 / 1000
+        weight_g = volume_cm3 * density
+
+        # New entry structure
+        entry = {
+            "date": datetime.now().isoformat(timespec="seconds"),
+            "spool": spool_name,
+            "file": file_name,
+            "length_mm": round(extruded_length, 1),
+            "weight_g": round(weight_g, 2),
+        }
+
+        entries.append(entry)
+        # Keep last 10 entries
+        entries = entries[-10:]
+
+        await self.hass.services.async_call(
+            "text",
+            "set_value",
+            {
+                "entity_id": history_entity_id,
+                "value": json.dumps(entries),
+            },
+            blocking=True,
+        )
 
     async def _update_spool_usage(self):
         """Update spool usage during active print."""

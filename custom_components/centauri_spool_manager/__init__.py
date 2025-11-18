@@ -202,6 +202,22 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
 
         _LOGGER.info(f"Setting up spool {spool_num}: {name} ({material}, {weight_grams}g)")
 
+        # Prevent overwriting a non-empty/non-ready spool
+        spool_state_entity = f"sensor.centauri_spool_manager_spool_{spool_num}_state"
+        spool_state = hass.states.get(spool_state_entity)
+        if spool_state and spool_state.state not in ("unknown", "unavailable"):
+            # Only allow setup for "ready" (never configured) or "empty" (explicitly marked empty)
+            if spool_state.state not in ("ready", "empty"):
+                _LOGGER.warning(
+                    "Refusing to configure Spool %s because its state is %s (must be ready or empty)",
+                    spool_num,
+                    spool_state.state,
+                )
+                raise ValueError(
+                    f"Spool {spool_num} is currently {spool_state.state}. "
+                    "Mark it empty or reset it before configuring a new spool."
+                )
+
         # Step 1: Unlock spool
         await hass.services.async_call(
             "switch", "turn_off",

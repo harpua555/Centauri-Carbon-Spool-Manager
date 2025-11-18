@@ -43,7 +43,7 @@ class AddNewSpoolButton(ButtonEntity):
     async def async_press(self) -> None:
         """Handle the button press."""
         # Get values from form entities
-        slot_entity = f"number.centauri_spool_manager_new_spool_slot"
+        slot_entity = f"select.centauri_spool_manager_new_spool_slot"
         name_entity = f"text.centauri_spool_manager_new_spool_name"
         material_entity = f"select.centauri_spool_manager_new_spool_material"
         weight_entity = f"number.centauri_spool_manager_new_spool_weight"
@@ -59,7 +59,8 @@ class AddNewSpoolButton(ButtonEntity):
             _LOGGER.error("Add Spool form entities not found")
             return
 
-        spool_number = int(float(slot_state.state))
+        # Slot is provided as a string option ("1".."4")
+        spool_number = int(slot_state.state) if slot_state.state and slot_state.state.isdigit() else 1
         name = name_state.state
         material = material_state.state
         weight_grams = float(weight_state.state)
@@ -68,6 +69,18 @@ class AddNewSpoolButton(ButtonEntity):
         if not name:
             _LOGGER.warning("Spool name is required")
             return
+
+        # Check current spool state to avoid overwriting an in-use spool
+        spool_state_entity = f"sensor.centauri_spool_manager_spool_{spool_number}_state"
+        spool_state = self.hass.states.get(spool_state_entity)
+        if spool_state and spool_state.state not in ("unknown", "unavailable"):
+            if spool_state.state not in ("ready", "empty"):
+                _LOGGER.warning(
+                    "Cannot add new spool to slot %s because its state is %s (must be ready or empty)",
+                    spool_number,
+                    spool_state.state,
+                )
+                return
 
         # Call the setup_spool service
         await self.hass.services.async_call(

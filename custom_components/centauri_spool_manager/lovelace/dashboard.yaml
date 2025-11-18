@@ -16,7 +16,7 @@ views:
             title: "➕ Add New Spool"
             show_header_toggle: false
             entities:
-              - entity: number.centauri_spool_manager_new_spool_slot
+              - entity: select.centauri_spool_manager_new_spool_slot
                 name: Spool Slot (1-4)
               - entity: text.centauri_spool_manager_new_spool_name
                 name: Name
@@ -41,9 +41,6 @@ views:
               - entity: switch.centauri_spool_manager_enable_spool_tracking
                 name: Enable Automatic Tracking
                 icon: mdi:toggle-switch
-              - entity: number.centauri_spool_manager_filament_diameter
-                name: Filament Diameter
-                icon: mdi:diameter
 
           # All Spools Status Grid
           - type: grid
@@ -190,6 +187,9 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_1_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_filament_diameter
+                name: Filament Diameter
+                icon: mdi:diameter
 
           # Status Gauges
           - type: horizontal-stack
@@ -286,6 +286,9 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_2_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_filament_diameter
+                name: Filament Diameter
+                icon: mdi:diameter
 
           - type: horizontal-stack
             cards:
@@ -379,6 +382,9 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_3_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_filament_diameter
+                name: Filament Diameter
+                icon: mdi:diameter
 
           - type: horizontal-stack
             cards:
@@ -472,6 +478,9 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_4_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_filament_diameter
+                name: Filament Diameter
+                icon: mdi:diameter
 
           - type: horizontal-stack
             cards:

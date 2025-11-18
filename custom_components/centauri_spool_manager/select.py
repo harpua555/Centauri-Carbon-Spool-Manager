@@ -15,23 +15,21 @@ from .const import DOMAIN, CONF_NUM_SPOOLS, MATERIAL_TYPES, MATERIAL_DENSITIES
 _LOGGER = logging.getLogger(__name__)
 
 
-class NewSpoolMaterialSelect(SelectEntity, RestoreEntity):
-    """Select entity for new spool material."""
+class NewSpoolSlotSelect(SelectEntity, RestoreEntity):
+    """Select entity for which spool slot to use when adding a new spool."""
 
     _attr_has_entity_name = True
-    _attr_icon = "mdi:palette"
-    # Use the shared material type list from const.py
-    _attr_options = MATERIAL_TYPES
+    _attr_icon = "mdi:numeric"
+    _attr_options = ["1", "2", "3", "4"]
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, entry_id: str):
         """Initialize the select entity."""
         self._entry_id = entry_id
-        self._attr_unique_id = f"{entry_id}_new_spool_material"
-        self._attr_name = "Centauri Spool Manager New Spool Material"
-        # Explicit entity_id so it matches documentation and dashboard YAML
-        self.entity_id = "select.centauri_spool_manager_new_spool_material"
-        self._attr_current_option = "PLA"
+        self._attr_unique_id = f"{entry_id}_new_spool_slot"
+        self._attr_name = "Centauri Spool Manager New Spool Slot"
+        self.entity_id = "select.centauri_spool_manager_new_spool_slot"
+        self._attr_current_option = "1"
 
     @property
     def device_info(self):
@@ -56,6 +54,25 @@ class NewSpoolMaterialSelect(SelectEntity, RestoreEntity):
         self.async_write_ha_state()
 
 
+class NewSpoolMaterialSelect(SelectEntity, RestoreEntity):
+    """Select entity for new spool material."""
+
+    _attr_has_entity_name = True
+    _attr_icon = "mdi:palette"
+    # Use the shared material type list from const.py
+    _attr_options = MATERIAL_TYPES
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str):
+        """Initialize the select entity."""
+        self._entry_id = entry_id
+        self._attr_unique_id = f"{entry_id}_new_spool_material"
+        self._attr_name = "Centauri Spool Manager New Spool Material"
+        # Explicit entity_id so it matches documentation and dashboard YAML
+        self.entity_id = "select.centauri_spool_manager_new_spool_material"
+        self._attr_current_option = "PLA"
+
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -69,7 +86,8 @@ async def async_setup_entry(
 
     entities = []
 
-    # Add Spool form helper
+    # Add Spool form helpers
+    entities.append(NewSpoolSlotSelect(entry.entry_id))
     entities.append(NewSpoolMaterialSelect(entry.entry_id))
 
     # Active spool selector
