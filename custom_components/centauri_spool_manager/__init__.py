@@ -1,6 +1,7 @@
 """Centauri Carbon Spool Manager Integration."""
 from __future__ import annotations
 
+import json
 import logging
 import math
 from pathlib import Path
@@ -30,6 +31,14 @@ UNDO_LAST_PRINT_SCHEMA = vol.Schema({
 MARK_SPOOL_EMPTY_SCHEMA = vol.Schema({
     vol.Required("spool_number"): cv.positive_int,
 })
+
+UNDO_HISTORY_ENTRY_SCHEMA = vol.Schema(
+    {
+        vol.Required("spool_number"): cv.positive_int,
+        # Zero-based index into the history list (oldest entry = 0)
+        vol.Required("entry_index"): vol.All(int, vol.Range(min=0)),
+    }
+)
 
 SET_SPOOL_WEIGHT_SCHEMA = vol.Schema({
     vol.Required("spool_number"): cv.positive_int,
@@ -155,6 +164,95 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
                 blocking=True,
             )
 
+    async def handle_undo_history_entry(call: ServiceCall) -> None:
+        """Handle undo of a specific history entry."""
+        spool_num = call.data["spool_number"]
+        entry_index = call.data["entry_index"]
+        _LOGGER.info(
+            "Undoing history entry %s for spool %s", entry_index, spool_num
+        )
+
+        history_entity_id = f"text.centauri_spool_manager_spool_{spool_num}_history"
+        used_length_entity = f"number.centauri_spool_manager_spool_{spool_num}_used_length"
+
+        history_state = hass.states.get(history_entity_id)
+        used_state = hass.states.get(used_length_entity)
+
+        if (
+            not history_state
+            or history_state.state in ("unknown", "unavailable", "")
+        ):
+            _LOGGER.warning(
+                "No history available for spool %s when undo was requested", spool_num
+            )
+            return
+
+        try:
+            # History is stored as a JSON list; make sure we always have a list.
+            entries = cv.ensure_list(json.loads(history_state.state))
+        except Exception:  # noqa: BLE001
+            _LOGGER.error(
+                "Failed to parse history JSON for spool %s during undo", spool_num
+            )
+            return
+
+        if not entries:
+            _LOGGER.warning(
+                "History for spool %s is empty; nothing to undo", spool_num
+            )
+            return
+
+        if entry_index < 0 or entry_index >= len(entries):
+            _LOGGER.warning(
+                "History index %s out of range for spool %s (len=%s)",
+                entry_index,
+                spool_num,
+                len(entries),
+            )
+            return
+
+        # Oldest entry is index 0; keep that convention
+        entry = entries.pop(entry_index)
+        length_mm = float(entry.get("length_mm", 0))
+
+        if used_state and used_state.state not in ("unknown", "unavailable"):
+            try:
+                current_used = float(used_state.state)
+            except (ValueError, TypeError):
+                current_used = 0
+
+            new_used = max(0, current_used - length_mm)
+            new_used = round(new_used)
+
+            await hass.services.async_call(
+                "number",
+                "set_value",
+                {"entity_id": used_length_entity, "value": new_used},
+                blocking=True,
+            )
+
+        # Persist updated history
+        await hass.services.async_call(
+            "text",
+            "set_value",
+            {"entity_id": history_entity_id, "value": json.dumps(entries)},
+            blocking=True,
+        )
+
+        await hass.services.async_call(
+            "logbook",
+            "log",
+            {
+                "name": "Centauri Spool Manager",
+                "message": (
+                    f"Undid history entry for Spool {spool_num}: "
+                    f"{entry.get('file', 'Unknown file')} "
+                    f"({length_mm:.0f}mm)"
+                ),
+            },
+            blocking=False,
+        )
+
     async def handle_set_spool_weight(call: ServiceCall) -> None:
         """Handle set spool weight service."""
         spool_num = call.data["spool_number"]
@@ -275,6 +373,12 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
     hass.services.async_register(
         DOMAIN, "setup_spool", handle_setup_spool, schema=SETUP_SPOOL_SCHEMA
     )
+    hass.services.async_register(
+        DOMAIN,
+        "undo_history_entry",
+        handle_undo_history_entry,
+        schema=UNDO_HISTORY_ENTRY_SCHEMA,
+    )
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -293,6 +397,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.services.async_remove(DOMAIN, "mark_spool_empty")
         hass.services.async_remove(DOMAIN, "set_spool_weight")
         hass.services.async_remove(DOMAIN, "setup_spool")
+        hass.services.async_remove(DOMAIN, "undo_history_entry")
 
     return unload_ok
 
