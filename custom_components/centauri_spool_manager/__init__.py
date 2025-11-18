@@ -36,6 +36,14 @@ SET_SPOOL_WEIGHT_SCHEMA = vol.Schema({
     vol.Required("weight_grams"): cv.positive_float,
 })
 
+SETUP_SPOOL_SCHEMA = vol.Schema({
+    vol.Required("spool_number"): cv.positive_int,
+    vol.Required("name"): cv.string,
+    vol.Required("material"): cv.string,
+    vol.Required("weight_grams"): cv.positive_float,
+    vol.Optional("auto_lock", default=True): cv.boolean,
+})
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Centauri Carbon Spool Manager from a config entry."""
@@ -184,6 +192,55 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
                 blocking=True,
             )
 
+    async def handle_setup_spool(call: ServiceCall) -> None:
+        """Handle setup spool service - wizard-style all-in-one configuration."""
+        spool_num = call.data["spool_number"]
+        name = call.data["name"]
+        material = call.data["material"]
+        weight_grams = call.data["weight_grams"]
+        auto_lock = call.data.get("auto_lock", True)
+
+        _LOGGER.info(f"Setting up spool {spool_num}: {name} ({material}, {weight_grams}g)")
+
+        # Step 1: Unlock spool
+        await hass.services.async_call(
+            "switch", "turn_off",
+            {"entity_id": f"switch.centauri_spool_manager_spool_{spool_num}_lock"},
+            blocking=True,
+        )
+
+        # Step 2: Set name
+        await hass.services.async_call(
+            "text", "set_value",
+            {"entity_id": f"text.centauri_spool_manager_spool_{spool_num}_name", "value": name},
+            blocking=True,
+        )
+
+        # Step 3: Set material
+        await hass.services.async_call(
+            "select", "select_option",
+            {"entity_id": f"select.centauri_spool_manager_spool_{spool_num}_material", "option": material},
+            blocking=True,
+        )
+
+        # Step 4: Set weight (which calculates length automatically)
+        await hass.services.async_call(
+            DOMAIN, "set_spool_weight",
+            {"spool_number": spool_num, "weight_grams": weight_grams},
+            blocking=True,
+        )
+
+        # Step 5: Lock spool if requested
+        if auto_lock:
+            await hass.services.async_call(
+                "switch", "turn_on",
+                {"entity_id": f"switch.centauri_spool_manager_spool_{spool_num}_lock"},
+                blocking=True,
+            )
+            _LOGGER.info(f"Spool {spool_num} configured and locked")
+        else:
+            _LOGGER.info(f"Spool {spool_num} configured (unlocked)")
+
     # Register all services
     hass.services.async_register(
         DOMAIN, "reset_spool", handle_reset_spool, schema=RESET_SPOOL_SCHEMA
@@ -196,6 +253,9 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
     )
     hass.services.async_register(
         DOMAIN, "set_spool_weight", handle_set_spool_weight, schema=SET_SPOOL_WEIGHT_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, "setup_spool", handle_setup_spool, schema=SETUP_SPOOL_SCHEMA
     )
 
 
@@ -214,6 +274,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.services.async_remove(DOMAIN, "undo_last_print")
         hass.services.async_remove(DOMAIN, "mark_spool_empty")
         hass.services.async_remove(DOMAIN, "set_spool_weight")
+        hass.services.async_remove(DOMAIN, "setup_spool")
 
     return unload_ok
 

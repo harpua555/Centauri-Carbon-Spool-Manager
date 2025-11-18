@@ -40,20 +40,35 @@ After installing the integration, add the dashboard:
 
 ### First Use
 
-1. **Open the Spool Manager dashboard**
+**Spools start locked by default** to prevent accidental changes.
 
-2. **Configure a spool:**
-   - Navigate to a spool tab (Spool 1, Spool 2, etc.)
-   - Give it a name
-   - Choose material type (PLA, PETG, etc.) - density auto-updates
-   - **Set initial weight** in grams - length is calculated automatically
-   - **Lock configuration** to prevent accidental changes during printing
+**Option A: Using the Setup Service (Recommended)**
 
-3. **On the Overview tab:**
-   - Select active spool
-   - Enable tracking
+Use the `setup_spool` service to configure everything at once:
 
-4. **Start printing!** Usage is tracked automatically
+```yaml
+service: centauri_spool_manager.setup_spool
+data:
+  spool_number: 1
+  name: "Red PLA"
+  material: "PLA"
+  weight_grams: 1000
+  auto_lock: true  # Optional, defaults to true
+```
+
+This automatically unlocks, configures, and locks the spool.
+
+**Option B: Manual Configuration**
+
+1. Click "Reset Spool" button to unlock
+2. Configure name, material, and weight
+3. Click the lock toggle to lock it again
+
+**Then:**
+1. Go to Overview tab
+2. Select active spool
+3. Enable tracking
+4. Start printing!
 
 The dashboard includes:
 - **Overview tab** - All spools at a glance with gauge indicators

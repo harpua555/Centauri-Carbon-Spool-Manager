@@ -84,7 +84,7 @@ class SpoolLockSwitch(SwitchEntity, RestoreEntity):
         self._spool_num = spool_num
         self._attr_unique_id = f"{entry_id}_spool_{spool_num}_lock"
         self._attr_name = f"Spool {spool_num} Lock"
-        self._attr_is_on = False  # Unlocked by default
+        self._attr_is_on = True  # Locked by default to prevent accidental changes
 
     @property
     def device_info(self):
