@@ -115,18 +115,29 @@ class CentauriSpoolHistoryCard extends HTMLElement {
     } else {
       const rowsHtml = this._entries
         .map((entry, index) => {
-          const date = entry.date || "";
-          const file = entry.file || "Unknown";
-          const length = entry.length_mm != null ? entry.length_mm : "";
-          const weight = entry.weight_g != null ? entry.weight_g : "";
+          // Support both old and new history formats.
+          const time = entry.t || entry.date || "";
+          const material = entry.m || entry.material || "";
+          const length =
+            entry.mm != null
+              ? entry.mm
+              : entry.length_mm != null
+              ? entry.length_mm
+              : "";
+          const weight =
+            entry.w != null
+              ? entry.w
+              : entry.weight_g != null
+              ? entry.weight_g
+              : "";
 
-          // Entries are stored oldest-first; we render newest-first
+          // Entries are stored oldest-first; we render newest-first.
           const originalIndex = this._entries.length - 1 - index;
 
           return `
             <tr>
-              <td>${date}</td>
-              <td>${file}</td>
+              <td>${time}</td>
+              <td>${material}</td>
               <td>${length}</td>
               <td>${weight}</td>
               <td>
@@ -141,8 +152,8 @@ class CentauriSpoolHistoryCard extends HTMLElement {
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>File</th>
+              <th>Time</th>
+              <th>Material</th>
               <th>Length (mm)</th>
               <th>Weight (g)</th>
               <th></th>

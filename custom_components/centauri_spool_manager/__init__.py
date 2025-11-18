@@ -213,7 +213,8 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
 
         # Oldest entry is index 0; keep that convention
         entry = entries.pop(entry_index)
-        length_mm = float(entry.get("length_mm", 0))
+        # Support both old (length_mm) and new (mm) keys
+        length_mm = float(entry.get("mm", entry.get("length_mm", 0)))
 
         if used_state and used_state.state not in ("unknown", "unavailable"):
             try:
@@ -239,15 +240,16 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
             blocking=True,
         )
 
+        material = entry.get("m", entry.get("material", ""))
         await hass.services.async_call(
             "logbook",
             "log",
             {
                 "name": "Centauri Spool Manager",
                 "message": (
-                    f"Undid history entry for Spool {spool_num}: "
-                    f"{entry.get('file', 'Unknown file')} "
-                    f"({length_mm:.0f}mm)"
+                    f"Undid history entry for Spool {spool_num}"
+                    f"{' (' + material + ')' if material else ''}: "
+                    f"{length_mm:.0f}mm"
                 ),
             },
             blocking=False,

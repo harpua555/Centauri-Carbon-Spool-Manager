@@ -261,14 +261,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             except (ValueError, TypeError):
                 _LOGGER.warning("Spool %s history contained invalid JSON, resetting", spool_num)
 
-        # Determine file name if available
-        file_name = "Unknown"
-        if self.file_name_entity:
-            file_state = self.hass.states.get(self.file_name_entity)
-            if file_state and file_state.state not in ("unknown", "unavailable"):
-                file_name = file_state.state
-
-        # Compute approximate weight in grams
+        # Compute approximate weight in grams for this print
         density_state = self.hass.states.get(f"number.centauri_spool_manager_spool_{spool_num}_density")
         diameter_state = self.hass.states.get("number.centauri_spool_manager_filament_diameter")
 
@@ -289,25 +282,46 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         volume_mm3 = 3.14159265359 * (radius_mm ** 2) * extruded_length
         volume_cm3 = volume_mm3 / 1000
         weight_g = volume_cm3 * density
+        weight_g = round(weight_g, 1)
 
-        # New entry structure
+        # Capture material at time of print (short field names to keep JSON compact)
+        material = ""
+        material_state = self.hass.states.get(
+            f"select.centauri_spool_manager_spool_{spool_num}_material"
+        )
+        if material_state and material_state.state not in ("unknown", "unavailable"):
+            material = material_state.state
+
+        # Compact entry structure:
+        # - t: ISO timestamp
+        # - m: material
+        # - mm: length in millimeters
+        # - w: weight in grams
         entry = {
-            "date": datetime.now().isoformat(timespec="seconds"),
-            "spool": spool_name,
-            "file": file_name,
-            "length_mm": int(round(extruded_length)),
-            "weight_g": round(weight_g, 1),
+            "t": datetime.now().isoformat(timespec="seconds"),
+            "m": material,
+            "mm": int(round(extruded_length)),
+            "w": weight_g,
         }
 
         entries.append(entry)
-        # Keep last 10 entries
+        # Keep last 10 entries by default
         entries = entries[-10:]
 
+        # Home Assistant enforces a 255-character maximum for the entity
+        # state string. Trim oldest entries until the JSON fits safely
+        # under that limit.
+        history_json = json.dumps(entries)
+        while len(history_json) > 250 and len(entries) > 1:
+            entries = entries[1:]
+            history_json = json.dumps(entries)
+
         _LOGGER.debug(
-            "Prepared history entry for spool %s: %s (total_entries=%d)",
+            "Prepared history entry for spool %s: %s (total_entries=%d, json_len=%d)",
             spool_num,
             entry,
             len(entries),
+            len(history_json),
         )
 
         await self.hass.services.async_call(
@@ -315,7 +329,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             "set_value",
             {
                 "entity_id": history_entity_id,
-                "value": json.dumps(entries),
+                "value": history_json,
             },
             blocking=True,
         )
