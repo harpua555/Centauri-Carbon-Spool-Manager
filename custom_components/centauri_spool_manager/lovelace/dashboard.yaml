@@ -11,157 +11,165 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          # Quick Add Spool Form
-          - type: entities
-            title: "➕ Add New Spool"
-            show_header_toggle: false
-            entities:
-              - entity: select.centauri_spool_manager_new_spool_slot
-                name: Spool Slot (1-4)
-              - entity: text.centauri_spool_manager_new_spool_name
-                name: Name
-              - entity: select.centauri_spool_manager_new_spool_material
-                name: Material
-              - entity: number.centauri_spool_manager_new_spool_weight
-                name: Weight (g)
-              - entity: switch.centauri_spool_manager_new_spool_auto_lock
-                name: Auto-lock after setup
-              - entity: button.centauri_spool_manager_add_new_spool
-                name: Add Spool
-                icon: mdi:plus-circle
-
-          # Global Controls
-          - type: entities
-            title: Spool Manager Controls
-            show_header_toggle: false
-            entities:
-              - entity: select.centauri_spool_manager_active_spool
-                name: Active Spool
-                icon: mdi:printer-3d-nozzle
-              - entity: switch.centauri_spool_manager_enable_spool_tracking
-                name: Enable Automatic Tracking
-                icon: mdi:toggle-switch
-
-          # All Spools Status Grid
+          # Top row: controls, active spool summary, add spool
           - type: grid
-            columns: 2
+            columns: 3
             square: false
             cards:
-              # Spool 1 Overview
-              - type: vertical-stack
-                cards:
-                  - type: markdown
-                    content: |
-                      ### Spool 1
-                      **{{ states('text.centauri_spool_manager_spool_1_name') or 'Unnamed' }}**
-                      {{ states('select.centauri_spool_manager_spool_1_material') }}
-                  - type: gauge
-                    entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
-                    name: Remaining
-                    needle: true
-                    min: 0
-                    max: 100
-                    severity:
-                      green: 50
-                      yellow: 20
-                      red: 0
-                  - type: horizontal-stack
-                    cards:
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_1_remaining_weight
-                        name: Weight
-                        icon: mdi:weight-gram
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_1_state
-                        name: Status
-                        icon: mdi:state-machine
+              # Spool selector & tracking
+              - type: entities
+                title: Spool Manager
+                show_header_toggle: false
+                entities:
+                  - entity: select.centauri_spool_manager_active_spool
+                    name: Active Spool
+                    icon: mdi:printer-3d-nozzle
+                  - entity: switch.centauri_spool_manager_enable_spool_tracking
+                    name: Enable Automatic Tracking
+                    icon: mdi:toggle-switch
 
-              # Spool 2 Overview
-              - type: vertical-stack
-                cards:
-                  - type: markdown
-                    content: |
-                      ### Spool 2
-                      **{{ states('text.centauri_spool_manager_spool_2_name') or 'Unnamed' }}**
-                      {{ states('select.centauri_spool_manager_spool_2_material') }}
-                  - type: gauge
-                    entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
-                    name: Remaining
-                    needle: true
-                    min: 0
-                    max: 100
-                    severity:
-                      green: 50
-                      yellow: 20
-                      red: 0
-                  - type: horizontal-stack
-                    cards:
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_2_remaining_weight
-                        name: Weight
-                        icon: mdi:weight-gram
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_2_state
-                        name: Status
-                        icon: mdi:state-machine
+              # Active spool summary
+              - type: markdown
+                content: >
+                  {% set active = states('select.centauri_spool_manager_active_spool') %}
+                  {% if active != 'None' %}
+                  {% set n = active.split(' ')[1] %}
+                  ### Active Spool
 
-              # Spool 3 Overview
-              - type: vertical-stack
-                cards:
-                  - type: markdown
-                    content: |
-                      ### Spool 3
-                      **{{ states('text.centauri_spool_manager_spool_3_name') or 'Unnamed' }}**
-                      {{ states('select.centauri_spool_manager_spool_3_material') }}
-                  - type: gauge
-                    entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
-                    name: Remaining
-                    needle: true
-                    min: 0
-                    max: 100
-                    severity:
-                      green: 50
-                      yellow: 20
-                      red: 0
-                  - type: horizontal-stack
-                    cards:
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_3_remaining_weight
-                        name: Weight
-                        icon: mdi:weight-gram
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_3_state
-                        name: Status
-                        icon: mdi:state-machine
+                  **{{ states('text.centauri_spool_manager_spool_' ~ n ~ '_name') or ('Spool ' ~ n) }}**
 
-              # Spool 4 Overview
-              - type: vertical-stack
-                cards:
-                  - type: markdown
-                    content: |
-                      ### Spool 4
-                      **{{ states('text.centauri_spool_manager_spool_4_name') or 'Unnamed' }}**
-                      {{ states('select.centauri_spool_manager_spool_4_material') }}
-                  - type: gauge
-                    entity: sensor.centauri_spool_manager_spool_4_percentage_remaining
-                    name: Remaining
-                    needle: true
-                    min: 0
-                    max: 100
-                    severity:
-                      green: 50
-                      yellow: 20
-                      red: 0
-                  - type: horizontal-stack
-                    cards:
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_4_remaining_weight
-                        name: Weight
-                        icon: mdi:weight-gram
-                      - type: entity
-                        entity: sensor.centauri_spool_manager_spool_4_state
-                        name: Status
-                        icon: mdi:state-machine
+                  {{ states('select.centauri_spool_manager_spool_' ~ n ~ '_material') }}
+
+                  Remaining: {{ states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') }} g
+                  {% else %}
+                  _No active spool selected._
+                  {% endif %}
+
+              # Quick Add Spool Form
+              - type: entities
+                title: "➕ Add New Spool"
+                show_header_toggle: false
+                entities:
+                  - entity: select.centauri_spool_manager_new_spool_slot
+                    name: Spool Slot (1-4)
+                  - entity: text.centauri_spool_manager_new_spool_name
+                    name: Name
+                  - entity: select.centauri_spool_manager_new_spool_material
+                    name: Material
+                  - entity: number.centauri_spool_manager_new_spool_weight
+                    name: Weight (g)
+                  - entity: switch.centauri_spool_manager_new_spool_auto_lock
+                    name: Auto-lock after setup
+                  - entity: button.centauri_spool_manager_add_new_spool
+                    name: Add Spool
+                    icon: mdi:plus-circle
+
+          # Second row: three inactive spool overviews
+          - type: grid
+            columns: 3
+            square: false
+            cards:
+              # Spool 1 Overview (hidden when active)
+              - type: conditional
+                conditions:
+                  - entity: select.centauri_spool_manager_active_spool
+                    state_not: "Spool 1"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: markdown
+                      content: |
+                        ### Spool 1
+                        **{{ states('text.centauri_spool_manager_spool_1_name') or 'Unnamed' }}**
+                        {{ states('select.centauri_spool_manager_spool_1_material') }}
+                    - type: gauge
+                      entity: sensor.centauri_spool_manager_spool_1_percentage_remaining
+                      name: Remaining
+                      needle: true
+                      min: 0
+                      max: 100
+                      severity:
+                        green: 50
+                        yellow: 20
+                        red: 0
+                    - type: horizontal-stack
+                      cards:
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_1_remaining_weight
+                          name: Weight
+                          icon: mdi:weight-gram
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_1_state
+                          name: Status
+                          icon: mdi:state-machine
+
+              # Spool 2 Overview (hidden when active)
+              - type: conditional
+                conditions:
+                  - entity: select.centauri_spool_manager_active_spool
+                    state_not: "Spool 2"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: markdown
+                      content: |
+                        ### Spool 2
+                        **{{ states('text.centauri_spool_manager_spool_2_name') or 'Unnamed' }}**
+                        {{ states('select.centauri_spool_manager_spool_2_material') }}
+                    - type: gauge
+                      entity: sensor.centauri_spool_manager_spool_2_percentage_remaining
+                      name: Remaining
+                      needle: true
+                      min: 0
+                      max: 100
+                      severity:
+                        green: 50
+                        yellow: 20
+                        red: 0
+                    - type: horizontal-stack
+                      cards:
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_2_remaining_weight
+                          name: Weight
+                          icon: mdi:weight-gram
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_2_state
+                          name: Status
+                          icon: mdi:state-machine
+
+              # Spool 3 Overview (hidden when active)
+              - type: conditional
+                conditions:
+                  - entity: select.centauri_spool_manager_active_spool
+                    state_not: "Spool 3"
+                card:
+                  type: vertical-stack
+                  cards:
+                    - type: markdown
+                      content: |
+                        ### Spool 3
+                        **{{ states('text.centauri_spool_manager_spool_3_name') or 'Unnamed' }}**
+                        {{ states('select.centauri_spool_manager_spool_3_material') }}
+                    - type: gauge
+                      entity: sensor.centauri_spool_manager_spool_3_percentage_remaining
+                      name: Remaining
+                      needle: true
+                      min: 0
+                      max: 100
+                      severity:
+                        green: 50
+                        yellow: 20
+                        red: 0
+                    - type: horizontal-stack
+                      cards:
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_3_remaining_weight
+                          name: Weight
+                          icon: mdi:weight-gram
+                        - type: entity
+                          entity: sensor.centauri_spool_manager_spool_3_state
+                          name: Status
+                          icon: mdi:state-machine
 
   # Spool 1 Configuration Tab
   - title: Spool 1
@@ -614,3 +622,4 @@ views:
                 icon: mdi:undo
                 tap_action:
                   action: toggle
+
