@@ -32,6 +32,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         self._tracking_active = False
         self._print_start_extrusion = 0
         self._active_spool = None
+        self._current_file_name: str | None = None
 
         # Track printer status and extrusion
         self._setup_listeners()
@@ -154,18 +155,35 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
 
         self._active_spool = active_spool_state.state
 
+        # Capture file name at print start so we still have it when the print
+        # finishes (some printers reset the file name entity to "unknown").
+        self._current_file_name = None
+        if self.file_name_entity:
+            file_state = self.hass.states.get(self.file_name_entity)
+            if file_state and file_state.state not in ("unknown", "unavailable"):
+                self._current_file_name = file_state.state
+
         # Get current extrusion value
         extrusion_state = self.hass.states.get(self.extrusion_entity)
         if extrusion_state and extrusion_state.state not in ("unknown", "unavailable"):
             self._print_start_extrusion = float(extrusion_state.state)
             self._tracking_active = True
 
-            _LOGGER.info(f"Print started on {self._active_spool}, starting extrusion: {self._print_start_extrusion}mm")
+            _LOGGER.info(
+                "Print started on %s, starting extrusion: %smm (file=%s)",
+                self._active_spool,
+                self._print_start_extrusion,
+                self._current_file_name or "Unknown",
+            )
 
             # Store current spool name for history
             await self.hass.services.async_call(
-                "text", "set_value",
-                {"entity_id": "text.centauri_spool_manager_current_print_spool", "value": self._active_spool},
+                "text",
+                "set_value",
+                {
+                    "entity_id": "text.centauri_spool_manager_current_print_spool",
+                    "value": self._active_spool,
+                },
                 blocking=True,
             )
 
@@ -238,6 +256,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         # Reset tracking state
         self._print_start_extrusion = 0
         self._active_spool = None
+        self._current_file_name = None
 
     async def _append_print_history(self, spool_num: str, spool_name: str, extruded_length: float) -> None:
         """Append a completed print entry to the spool's history text entity."""
@@ -274,9 +293,11 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                             spool_num,
                         )
 
-        # Determine file name if available
-        file_name = "Unknown"
-        if self.file_name_entity:
+        # Determine file name. Prefer the value captured at print start so we
+        # still have it if the printer resets the entity to "unknown" when the
+        # print ends.
+        file_name = self._current_file_name or "Unknown"
+        if file_name == "Unknown" and self.file_name_entity:
             file_state = self.hass.states.get(self.file_name_entity)
             if file_state and file_state.state not in ("unknown", "unavailable"):
                 file_name = file_state.state
