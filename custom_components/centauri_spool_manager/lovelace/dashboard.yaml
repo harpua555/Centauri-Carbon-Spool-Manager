@@ -30,19 +30,32 @@ views:
               {% set active = states('select.centauri_spool_manager_active_spool') %}
               {% if active != 'None' %}
               {% set n = active.split(' ')[1] %}
-              {% set name = states('text.centauri_spool_manager_spool_' ~ n ~ '_name') %}
+              {% set name = states('text.centauri_spool_manager_spool_' ~ n ~ '_name') or ('Spool ' ~ n) %}
               {% set material = states('select.centauri_spool_manager_spool_' ~ n ~ '_material') %}
-              {% set pct = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_percentage_remaining') %}
-              {% set weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') %}
+              {% set pct = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_percentage_remaining') | float(0) %}
+              {% set weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') | float(0) %}
               {% set state = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_state') %}
+              {% set last_weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_last_print_weight') | float(0) %}
+              {% set hist = state_attr('text.centauri_spool_manager_spool_' ~ n ~ '_history', 'history') %}
+              {% if hist is sequence and hist | length > 0 %}
+              {% set last = hist[-1] %}
+              {% else %}
+              {% set last = none %}
+              {% endif %}
 
-              **Spool {{ n }} – {{ name or ('Spool ' ~ n) }}**
+              **{{ name }} (Spool {{ n }})**
 
               Material: {{ material }}
 
-              Remaining: {{ pct }} % ({{ weight }} g)
+              Status: **{{ state }}**
 
-              Status: {{ state }}
+              Remaining: **{{ '%.1f' | format(pct) }} %** ({{ '%.1f' | format(weight) }} g)
+
+              {% if last %}
+              _Last print:_ {{ last.t }} – {{ last.f }} ({{ last.mm }} mm, {{ last.w }} g)
+              {% else %}
+              _Last print:_ none logged yet
+              {% endif %}
               {% else %}
               _No active spool selected._
               {% endif %}
