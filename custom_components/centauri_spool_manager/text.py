@@ -173,6 +173,7 @@ class SpoolHistoryText(CentauriTextEntity):
     """Per-spool print history stored as JSON."""
 
     _attr_icon = "mdi:history"
+    # Allow reasonably long JSON history strings
     _attr_max_length = 2048
 
     def __init__(self, entry_id: str, spool_num: int):
@@ -180,3 +181,10 @@ class SpoolHistoryText(CentauriTextEntity):
         super().__init__(entry_id, "history", spool_num)
         # Store history as JSON list of entries
         self._attr_native_value = "[]"
+
+    @property
+    def max(self) -> int:
+        """Maximum allowed length for the history JSON string."""
+        # Some Home Assistant versions use the `max` attribute instead of
+        # `_attr_max_length` when validating text length, so expose it here.
+        return self._attr_max_length
