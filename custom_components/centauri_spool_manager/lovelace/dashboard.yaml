@@ -11,18 +11,6 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          # Active spool selector + tracking
-          - type: entities
-            title: Spool Manager
-            show_header_toggle: false
-            entities:
-              - entity: select.centauri_spool_manager_active_spool
-                name: Active Spool
-                icon: mdi:printer-3d-nozzle
-              - entity: switch.centauri_spool_manager_enable_spool_tracking
-                name: Enable Automatic Tracking
-                icon: mdi:toggle-switch
-
           # Active spool details
           - type: markdown
             title: Active Spool
@@ -34,8 +22,10 @@ views:
               {% set material = states('select.centauri_spool_manager_spool_' ~ n ~ '_material') %}
               {% set pct = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_percentage_remaining') | float(0) %}
               {% set weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') | float(0) %}
+              {% set length = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_length') | float(0) %}
               {% set state = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_state') %}
               {% set last_weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_last_print_weight') | float(0) %}
+              {% set url = states('text.centauri_spool_manager_spool_' ~ n ~ '_url') %}
               {% set hist = state_attr('text.centauri_spool_manager_spool_' ~ n ~ '_history', 'history') %}
               {% if hist is sequence and hist | length > 0 %}
               {% set last = hist[-1] %}
@@ -43,13 +33,17 @@ views:
               {% set last = none %}
               {% endif %}
 
-              **{{ name }} (Spool {{ n }})**
+              ## {{ name }}
+
+              **Spool {{ n }}**
 
               Material: {{ material }}
 
-              Status: **{{ state }}**
+              Remaining: **{{ '%.1f' | format(weight) }} g**, {{ '%.0f' | format(length) }} mm ({{ '%.1f' | format(pct) }} %)
 
-              Remaining: **{{ '%.1f' | format(pct) }} %** ({{ '%.1f' | format(weight) }} g)
+              {% if url not in ['unknown', 'unavailable', ''] %}
+              Product: [Link]({{ url }})
+              {% endif %}
 
               {% if last %}
               _Last print:_ {{ last.t }} – {{ last.f }} ({{ last.mm }} mm, {{ last.w }} g)
@@ -59,6 +53,18 @@ views:
               {% else %}
               _No active spool selected._
               {% endif %}
+
+          # Active spool selector + tracking
+          - type: entities
+            title: Spool Manager
+            show_header_toggle: false
+            entities:
+              - entity: select.centauri_spool_manager_active_spool
+                name: Active Spool
+                icon: mdi:printer-3d-nozzle
+              - entity: switch.centauri_spool_manager_enable_spool_tracking
+                name: Enable Automatic Tracking
+                icon: mdi:toggle-switch
 
           # Quick Add Spool Form
           - type: entities
@@ -103,6 +109,10 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_1_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_spool_1_cost
+                name: Spool Cost
+              - entity: text.centauri_spool_manager_spool_1_url
+                name: Product URL
               - entity: number.centauri_spool_manager_filament_diameter
                 name: Filament Diameter
                 icon: mdi:diameter
@@ -208,6 +218,10 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_2_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_spool_2_cost
+                name: Spool Cost
+              - entity: text.centauri_spool_manager_spool_2_url
+                name: Product URL
               - entity: number.centauri_spool_manager_filament_diameter
                 name: Filament Diameter
                 icon: mdi:diameter
@@ -310,6 +324,10 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_3_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_spool_3_cost
+                name: Spool Cost
+              - entity: text.centauri_spool_manager_spool_3_url
+                name: Product URL
               - entity: number.centauri_spool_manager_filament_diameter
                 name: Filament Diameter
                 icon: mdi:diameter
@@ -412,6 +430,10 @@ views:
                 name: Initial Weight
               - entity: number.centauri_spool_manager_spool_4_density
                 name: Material Density
+              - entity: number.centauri_spool_manager_spool_4_cost
+                name: Spool Cost
+              - entity: text.centauri_spool_manager_spool_4_url
+                name: Product URL
               - entity: number.centauri_spool_manager_filament_diameter
                 name: Filament Diameter
                 icon: mdi:diameter

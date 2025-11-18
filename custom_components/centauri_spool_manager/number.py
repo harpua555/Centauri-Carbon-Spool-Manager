@@ -87,6 +87,7 @@ async def async_setup_entry(
             SpoolDensityNumber(entry.entry_id, i),
             SpoolLastPrintLengthNumber(entry.entry_id, i),
             SpoolSetWeightNumber(hass, entry.entry_id, i),
+            SpoolCostNumber(entry.entry_id, i),
         ])
 
     async_add_entities(entities)
@@ -236,6 +237,27 @@ class SpoolLastPrintLengthNumber(CentauriNumberEntity):
         """Initialize last print length."""
         super().__init__(entry_id, "last_print_length", spool_num)
         self._attr_native_value = 0
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Update the value."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
+class SpoolCostNumber(CentauriNumberEntity):
+    """Spool total cost number entity."""
+
+    _attr_native_min_value = 0
+    _attr_native_max_value = 1000
+    _attr_native_step = 0.01
+    _attr_native_unit_of_measurement = "USD"
+    _attr_mode = NumberMode.BOX
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str, spool_num: int):
+        """Initialize spool cost."""
+        super().__init__(entry_id, "cost", spool_num)
+        self._attr_native_value = 0.0
 
     async def async_set_native_value(self, value: float) -> None:
         """Update the value."""

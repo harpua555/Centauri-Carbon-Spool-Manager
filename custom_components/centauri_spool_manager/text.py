@@ -71,9 +71,10 @@ async def async_setup_entry(
     # Add Spool form helper
     entities.append(NewSpoolNameText(entry.entry_id))
 
-    # Per-spool name and history entities
+    # Per-spool name, URL, and history entities
     for i in range(1, num_spools + 1):
         entities.append(SpoolNameText(entry.entry_id, i))
+        entities.append(SpoolUrlText(entry.entry_id, i))
         entities.append(SpoolHistoryText(entry.entry_id, i))
 
     # Current print spool tracking
@@ -151,6 +152,19 @@ class SpoolNameText(CentauriTextEntity):
 
         self._attr_native_value = value
         self.async_write_ha_state()
+
+
+class SpoolUrlText(CentauriTextEntity):
+    """Spool product URL text entity."""
+
+    _attr_icon = "mdi:link"
+    _attr_max_length = 255
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry_id: str, spool_num: int):
+        """Initialize spool URL."""
+        super().__init__(entry_id, "url", spool_num)
+        self._attr_native_value = ""
 
 
 class CurrentPrintSpoolText(CentauriTextEntity):
