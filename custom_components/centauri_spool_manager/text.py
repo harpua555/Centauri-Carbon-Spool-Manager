@@ -103,6 +103,11 @@ class CentauriTextEntity(TextEntity, RestoreEntity):
 
         self._attr_native_value = None
 
+    async def async_set_value(self, value: str) -> None:
+        """Update the value for generic text entities."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
     @property
     def device_info(self):
         """Return device info."""
