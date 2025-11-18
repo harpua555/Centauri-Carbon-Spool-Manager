@@ -241,6 +241,13 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         history_entity_id = f"text.centauri_spool_manager_spool_{spool_num}_history"
         history_state = self.hass.states.get(history_entity_id)
 
+        _LOGGER.debug(
+            "Starting history append for spool %s: entity_id=%s, raw_state=%s",
+            spool_num,
+            history_entity_id,
+            getattr(history_state, "state", None),
+        )
+
         # Decode existing JSON list (if any)
         entries = []
         if history_state and history_state.state not in ("unknown", "unavailable", ""):
@@ -293,6 +300,13 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
         # Keep last 10 entries
         entries = entries[-10:]
 
+        _LOGGER.debug(
+            "Prepared history entry for spool %s: %s (total_entries=%d)",
+            spool_num,
+            entry,
+            len(entries),
+        )
+
         await self.hass.services.async_call(
             "text",
             "set_value",
@@ -301,6 +315,13 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                 "value": json.dumps(entries),
             },
             blocking=True,
+        )
+
+        _LOGGER.info(
+            "Updated print history for spool %s (%s); entries=%d",
+            spool_num,
+            spool_name,
+            len(entries),
         )
 
     async def _update_spool_usage(self):
