@@ -29,6 +29,19 @@ class CentauriSpoolHistoryCard extends HTMLElement {
       return;
     }
 
+    // Prefer the dedicated `history` attribute provided by the
+    // SpoolHistoryText entity. This avoids the 255-character state length
+    // limit and keeps history in attributes instead.
+    const attrHist = stateObj.attributes && stateObj.attributes.history;
+
+    if (Array.isArray(attrHist)) {
+      this._entries = attrHist.slice(-this._config.max_entries);
+      this._error = null;
+      this._render();
+      return;
+    }
+
+    // Backwards compatibility: fall back to parsing the state as JSON.
     const raw = (stateObj.state || "").trim();
     if (!raw || raw === "unknown" || raw === "unavailable") {
       this._entries = [];

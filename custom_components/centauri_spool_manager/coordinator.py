@@ -251,15 +251,28 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             getattr(history_state, "state", None),
         )
 
-        # Decode existing JSON list (if any)
-        entries = []
-        if history_state and history_state.state not in ("unknown", "unavailable", ""):
-            try:
-                data = json.loads(history_state.state)
-                if isinstance(data, list):
-                    entries = data
-            except (ValueError, TypeError):
-                _LOGGER.warning("Spool %s history contained invalid JSON, resetting", spool_num)
+        # Decode existing history list (if any)
+        entries: list[dict] = []
+
+        if history_state:
+            # Preferred: use the attribute that the SpoolHistoryText entity
+            # exposes. This avoids the 255-character state length limit.
+            attr_hist = history_state.attributes.get("history")
+            if isinstance(attr_hist, list):
+                entries = attr_hist
+            else:
+                # Backwards compatibility: older versions stored JSON directly
+                # in the entity state.
+                if history_state.state not in ("unknown", "unavailable", ""):
+                    try:
+                        data = json.loads(history_state.state)
+                        if isinstance(data, list):
+                            entries = data
+                    except (ValueError, TypeError):
+                        _LOGGER.warning(
+                            "Spool %s history contained invalid JSON, resetting",
+                            spool_num,
+                        )
 
         # Determine file name if available
         file_name = "Unknown"
