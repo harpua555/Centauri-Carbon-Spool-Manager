@@ -119,6 +119,8 @@ async def async_register_services(hass: HomeAssistant, entry: ConfigEntry) -> No
             if used_state and used_state.state not in ("unknown", "unavailable"):
                 current_used = float(used_state.state)
                 new_used = max(0, current_used - last_print_length)
+                # Round to nearest mm
+                new_used = round(new_used)
 
                 # Update used length
                 await hass.services.async_call(

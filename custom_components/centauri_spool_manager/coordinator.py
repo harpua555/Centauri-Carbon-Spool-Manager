@@ -184,6 +184,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
 
         final_extrusion = float(extrusion_state.state)
         extruded_length = final_extrusion - self._print_start_extrusion
+        extruded_length = round(extruded_length)
 
         _LOGGER.info(f"Print ended ({end_status}), extruded: {extruded_length}mm on {self._active_spool}")
 
@@ -199,6 +200,7 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             if used_state and used_state.state not in ("unknown", "unavailable"):
                 current_used = float(used_state.state)
                 new_used = current_used + extruded_length
+                new_used = round(new_used)
 
                 await self.hass.services.async_call(
                     "number", "set_value",
@@ -283,8 +285,8 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             "date": datetime.now().isoformat(timespec="seconds"),
             "spool": spool_name,
             "file": file_name,
-            "length_mm": round(extruded_length, 1),
-            "weight_g": round(weight_g, 2),
+            "length_mm": int(round(extruded_length)),
+            "weight_g": round(weight_g, 1),
         }
 
         entries.append(entry)

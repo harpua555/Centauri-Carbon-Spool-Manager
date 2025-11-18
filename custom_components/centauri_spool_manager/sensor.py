@@ -128,7 +128,7 @@ class SpoolRemainingLengthSensor(CentauriSensorEntity):
         """Calculate remaining length."""
         initial = self._get_entity_value(self._tracked_entities[0])
         used = self._get_entity_value(self._tracked_entities[1])
-        self._attr_native_value = max(0, initial - used)
+        self._attr_native_value = round(max(0, initial - used))
 
 
 class SpoolRemainingWeightSensor(CentauriSensorEntity):
@@ -164,7 +164,8 @@ class SpoolRemainingWeightSensor(CentauriSensorEntity):
         volume_cm3 = volume_mm3 / 1000  # Convert mm³ to cm³
         weight_g = volume_cm3 * density
 
-        self._attr_native_value = round(weight_g, 2)
+        # Round to nearest 0.1 g
+        self._attr_native_value = round(weight_g, 1)
 
 
 class SpoolInitialWeightSensor(CentauriSensorEntity):
@@ -194,7 +195,7 @@ class SpoolInitialWeightSensor(CentauriSensorEntity):
         volume_cm3 = volume_mm3 / 1000
         weight_g = volume_cm3 * density
 
-        self._attr_native_value = round(weight_g, 2)
+        self._attr_native_value = round(weight_g, 1)
 
 
 class SpoolUsedWeightSensor(CentauriSensorEntity):
@@ -224,7 +225,7 @@ class SpoolUsedWeightSensor(CentauriSensorEntity):
         volume_cm3 = volume_mm3 / 1000
         weight_g = volume_cm3 * density
 
-        self._attr_native_value = round(weight_g, 2)
+        self._attr_native_value = round(weight_g, 1)
 
 
 class SpoolPercentageRemainingSensor(CentauriSensorEntity):
@@ -281,7 +282,7 @@ class SpoolLastPrintWeightSensor(CentauriSensorEntity):
         volume_cm3 = volume_mm3 / 1000
         weight_g = volume_cm3 * density
 
-        self._attr_native_value = round(weight_g, 2)
+        self._attr_native_value = round(weight_g, 1)
 
 
 class SpoolStateSensor(SensorEntity):

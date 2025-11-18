@@ -241,6 +241,22 @@ views:
               - entity: sensor.centauri_spool_manager_spool_1_last_print_weight
                 name: Last Print Used
 
+          # Print History
+          - type: markdown
+            title: Spool 1 Print History
+            content: >
+              {% set hist = states('text.centauri_spool_manager_spool_1_history') %}
+              {% if hist not in ['unknown', 'unavailable', ''] %}
+              {% set items = hist | from_json %}
+              | Date | File | Length (mm) | Weight (g) |
+              |------|------|-------------|-----------|
+              {% for item in items | reverse %}
+              | {{ item.date }} | {{ item.file }} | {{ item.length_mm }} | {{ item.weight_g }} |
+              {% endfor %}
+              {% else %}
+              _No prints logged yet._
+              {% endif %}
+
           # Action Buttons
           - type: horizontal-stack
             cards:
@@ -338,6 +354,22 @@ views:
               - entity: sensor.centauri_spool_manager_spool_2_last_print_weight
                 name: Last Print Used
 
+          # Print History
+          - type: markdown
+            title: Spool 2 Print History
+            content: >
+              {% set hist = states('text.centauri_spool_manager_spool_2_history') %}
+              {% if hist not in ['unknown', 'unavailable', ''] %}
+              {% set items = hist | from_json %}
+              | Date | File | Length (mm) | Weight (g) |
+              |------|------|-------------|-----------|
+              {% for item in items | reverse %}
+              | {{ item.date }} | {{ item.file }} | {{ item.length_mm }} | {{ item.weight_g }} |
+              {% endfor %}
+              {% else %}
+              _No prints logged yet._
+              {% endif %}
+
           - type: horizontal-stack
             cards:
               - type: button
@@ -434,6 +466,22 @@ views:
               - entity: sensor.centauri_spool_manager_spool_3_last_print_weight
                 name: Last Print Used
 
+          # Print History
+          - type: markdown
+            title: Spool 3 Print History
+            content: >
+              {% set hist = states('text.centauri_spool_manager_spool_3_history') %}
+              {% if hist not in ['unknown', 'unavailable', ''] %}
+              {% set items = hist | from_json %}
+              | Date | File | Length (mm) | Weight (g) |
+              |------|------|-------------|-----------|
+              {% for item in items | reverse %}
+              | {{ item.date }} | {{ item.file }} | {{ item.length_mm }} | {{ item.weight_g }} |
+              {% endfor %}
+              {% else %}
+              _No prints logged yet._
+              {% endif %}
+
           - type: horizontal-stack
             cards:
               - type: button
@@ -529,6 +577,22 @@ views:
               - type: divider
               - entity: sensor.centauri_spool_manager_spool_4_last_print_weight
                 name: Last Print Used
+
+          # Print History
+          - type: markdown
+            title: Spool 4 Print History
+            content: >
+              {% set hist = states('text.centauri_spool_manager_spool_4_history') %}
+              {% if hist not in ['unknown', 'unavailable', ''] %}
+              {% set items = hist | from_json %}
+              | Date | File | Length (mm) | Weight (g) |
+              |------|------|-------------|-----------|
+              {% for item in items | reverse %}
+              | {{ item.date }} | {{ item.file }} | {{ item.length_mm }} | {{ item.weight_g }} |
+              {% endfor %}
+              {% else %}
+              _No prints logged yet._
+              {% endif %}
 
           - type: horizontal-stack
             cards:
