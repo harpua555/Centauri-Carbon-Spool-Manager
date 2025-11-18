@@ -224,7 +224,10 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
                     {
                         "name": "Centauri Spool Manager",
                         "message": f"Print completed on {spool_name}: Used {extruded_length:.0f}mm",
-                        "entity_id": f"sensor.centauri_spool_manager_spool_{spool_num}_remaining_length",
+                        # Attach to the printer's status entity when available so
+                        # entries appear in the printer's logbook timeline.
+                        "entity_id": self.status_entity
+                        or f"sensor.centauri_spool_manager_spool_{spool_num}_remaining_length",
                     },
                     blocking=False,
                 )
