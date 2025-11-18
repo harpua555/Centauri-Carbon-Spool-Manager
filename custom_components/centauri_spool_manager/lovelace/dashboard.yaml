@@ -11,60 +11,60 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          # Top row: controls, active spool summary, add spool
-          - type: grid
-            columns: 3
-            square: false
-            cards:
-              # Spool selector & tracking
-              - type: entities
-                title: Spool Manager
-                show_header_toggle: false
-                entities:
-                  - entity: select.centauri_spool_manager_active_spool
-                    name: Active Spool
-                    icon: mdi:printer-3d-nozzle
-                  - entity: switch.centauri_spool_manager_enable_spool_tracking
-                    name: Enable Automatic Tracking
-                    icon: mdi:toggle-switch
+          # Active spool selector + tracking
+          - type: entities
+            title: Spool Manager
+            show_header_toggle: false
+            entities:
+              - entity: select.centauri_spool_manager_active_spool
+                name: Active Spool
+                icon: mdi:printer-3d-nozzle
+              - entity: switch.centauri_spool_manager_enable_spool_tracking
+                name: Enable Automatic Tracking
+                icon: mdi:toggle-switch
 
-              # Active spool summary
-              - type: markdown
-                content: >
-                  {% set active = states('select.centauri_spool_manager_active_spool') %}
-                  {% if active != 'None' %}
-                  {% set n = active.split(' ')[1] %}
-                  ### Active Spool
+          # Active spool details
+          - type: markdown
+            title: Active Spool
+            content: >
+              {% set active = states('select.centauri_spool_manager_active_spool') %}
+              {% if active != 'None' %}
+              {% set n = active.split(' ')[1] %}
+              {% set name = states('text.centauri_spool_manager_spool_' ~ n ~ '_name') %}
+              {% set material = states('select.centauri_spool_manager_spool_' ~ n ~ '_material') %}
+              {% set pct = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_percentage_remaining') %}
+              {% set weight = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') %}
+              {% set state = states('sensor.centauri_spool_manager_spool_' ~ n ~ '_state') %}
 
-                  **{{ states('text.centauri_spool_manager_spool_' ~ n ~ '_name') or ('Spool ' ~ n) }}**
+              **Spool {{ n }} – {{ name or ('Spool ' ~ n) }}**
 
-                  {{ states('select.centauri_spool_manager_spool_' ~ n ~ '_material') }}
+              Material: {{ material }}
 
-                  Remaining: {{ states('sensor.centauri_spool_manager_spool_' ~ n ~ '_remaining_weight') }} g
-                  {% else %}
-                  _No active spool selected._
-                  {% endif %}
+              Remaining: {{ pct }} % ({{ weight }} g)
 
-              # Quick Add Spool Form
-              - type: entities
-                title: "➕ Add New Spool"
-                show_header_toggle: false
-                entities:
-                  - entity: select.centauri_spool_manager_new_spool_slot
-                    name: Spool Slot (1-4)
-                  - entity: text.centauri_spool_manager_new_spool_name
-                    name: Name
-                  - entity: select.centauri_spool_manager_new_spool_material
-                    name: Material
-                  - entity: number.centauri_spool_manager_new_spool_weight
-                    name: Weight (g)
-                  - entity: switch.centauri_spool_manager_new_spool_auto_lock
-                    name: Auto-lock after setup
-                  - entity: button.centauri_spool_manager_add_new_spool
-                    name: Add Spool
-                    icon: mdi:plus-circle
+              Status: {{ state }}
+              {% else %}
+              _No active spool selected._
+              {% endif %}
 
-          # (Inactive spools are not shown on the overview to keep it clean)
+          # Quick Add Spool Form
+          - type: entities
+            title: "➕ Add New Spool"
+            show_header_toggle: false
+            entities:
+              - entity: select.centauri_spool_manager_new_spool_slot
+                name: Spool Slot (1-4)
+              - entity: text.centauri_spool_manager_new_spool_name
+                name: Name
+              - entity: select.centauri_spool_manager_new_spool_material
+                name: Material
+              - entity: number.centauri_spool_manager_new_spool_weight
+                name: Weight (g)
+              - entity: switch.centauri_spool_manager_new_spool_auto_lock
+                name: Auto-lock after setup
+              - entity: button.centauri_spool_manager_add_new_spool
+                name: Add Spool
+                icon: mdi:plus-circle
 
   # Spool 1 Configuration Tab
   - title: Spool 1
