@@ -35,7 +35,7 @@ class CentauriSpoolHistoryCard extends HTMLElement {
     const attrHist = stateObj.attributes && stateObj.attributes.history;
 
     if (Array.isArray(attrHist)) {
-      this._entries = attrHist.slice(-this._config.max_entries);
+      this._entries = attrHist.slice(); // clone
       this._error = null;
       this._render();
       return;
@@ -126,10 +126,17 @@ class CentauriSpoolHistoryCard extends HTMLElement {
     } else if (!this._entries || this._entries.length === 0) {
       content.innerHTML = `<div class="empty">No prints logged yet.</div>`;
     } else {
-      const rowsHtml = this._entries
-        .map((entry, index) => {
+      // Sort newest first by timestamp (t/date).
+      const sorted = [...this._entries].sort((a, b) => {
+        const aTime = new Date(a.t || a.date || 0).getTime();
+        const bTime = new Date(b.t || b.date || 0).getTime();
+        return bTime - aTime;
+      });
+
+      const rowsHtml = sorted
+        .map((entry) => {
           // Support both old and new history formats.
-          const time = entry.t || entry.date || "";
+          const timeStr = entry.t || entry.date || "";
           const file = entry.f || entry.file || "";
           const material = entry.m || entry.material || "";
           const length =
@@ -145,12 +152,21 @@ class CentauriSpoolHistoryCard extends HTMLElement {
               ? entry.weight_g
               : "";
 
-          // Entries are stored oldest-first; we render newest-first.
-          const originalIndex = this._entries.length - 1 - index;
+          let datePart = "";
+          let timePart = "";
+          if (timeStr) {
+            const split = timeStr.split("T");
+            datePart = split[0] || "";
+            timePart = split[1] || "";
+          }
+
+          // Find original index in underlying list for Undo service.
+          const originalIndex = this._entries.indexOf(entry);
 
           return `
             <tr>
-              <td>${time}</td>
+              <td>${datePart}</td>
+              <td>${timePart}</td>
               <td>${file}</td>
               <td>${material}</td>
               <td>${length}</td>
@@ -167,6 +183,7 @@ class CentauriSpoolHistoryCard extends HTMLElement {
         <table>
           <thead>
             <tr>
+              <th>Date</th>
               <th>Time</th>
               <th>File</th>
               <th>Material</th>
