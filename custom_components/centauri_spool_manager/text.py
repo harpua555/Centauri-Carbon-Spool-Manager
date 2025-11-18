@@ -1,6 +1,7 @@
 """Text platform for Centauri Carbon Spool Manager."""
 from __future__ import annotations
 
+import json
 import logging
 
 from homeassistant.components.text import TextEntity
@@ -173,18 +174,62 @@ class SpoolHistoryText(CentauriTextEntity):
     """Per-spool print history stored as JSON."""
 
     _attr_icon = "mdi:history"
-    # Allow reasonably long JSON history strings
-    _attr_max_length = 2048
+    # Allow reasonably long JSON payloads when called via text.set_value.
+    # The actual HA state string will only be a short summary.
+    _attr_max_length = 10000
 
     def __init__(self, entry_id: str, spool_num: int):
         """Initialize spool history."""
         super().__init__(entry_id, "history", spool_num)
-        # Store history as JSON list of entries
-        self._attr_native_value = "[]"
+        # Internal Python list of history entries; persisted via attributes.
+        self._history: list[dict] = []
+        # State shows a short summary (number of entries) to stay well under
+        # Home Assistant's 255-character state length limit.
+        self._attr_native_value = "0"
+
+    async def async_added_to_hass(self) -> None:
+        """Restore history from last state attributes."""
+        await super().async_added_to_hass()
+
+        last_state = await self.async_get_last_state()
+        if last_state is not None:
+            hist = last_state.attributes.get("history")
+            if isinstance(hist, list):
+                self._history = hist
+                self._attr_native_value = str(len(self._history))
+
+    @property
+    def extra_state_attributes(self):
+        """Expose full history in attributes, not in state string."""
+        return {"history": self._history}
 
     @property
     def max(self) -> int:
         """Maximum allowed length for the history JSON string."""
-        # Some Home Assistant versions use the `max` attribute instead of
-        # `_attr_max_length` when validating text length, so expose it here.
         return self._attr_max_length
+
+    async def async_set_value(self, value: str) -> None:
+        """Update history from a JSON string.
+
+        The coordinator calls text.set_value with the full JSON list. To avoid
+        hitting the global 255-character state length limit, we parse that JSON
+        into an internal list and keep the entity state as a short summary
+        (entry count), while exposing the full list via attributes.
+        """
+        try:
+            data = json.loads(value)
+            if isinstance(data, list):
+                self._history = data
+                self._attr_native_value = str(len(self._history))
+            else:
+                _LOGGER.warning(
+                    "History text for spool %s was not a list, ignoring", self._spool_num
+                )
+                return
+        except (ValueError, TypeError) as err:
+            _LOGGER.warning(
+                "Failed to decode history JSON for spool %s: %s", self._spool_num, err
+            )
+            return
+
+        self.async_write_ha_state()

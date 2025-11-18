@@ -117,6 +117,7 @@ class CentauriSpoolHistoryCard extends HTMLElement {
         .map((entry, index) => {
           // Support both old and new history formats.
           const time = entry.t || entry.date || "";
+          const file = entry.f || entry.file || "";
           const material = entry.m || entry.material || "";
           const length =
             entry.mm != null
@@ -137,6 +138,7 @@ class CentauriSpoolHistoryCard extends HTMLElement {
           return `
             <tr>
               <td>${time}</td>
+              <td>${file}</td>
               <td>${material}</td>
               <td>${length}</td>
               <td>${weight}</td>
@@ -153,6 +155,7 @@ class CentauriSpoolHistoryCard extends HTMLElement {
           <thead>
             <tr>
               <th>Time</th>
+              <th>File</th>
               <th>Material</th>
               <th>Length (mm)</th>
               <th>Weight (g)</th>

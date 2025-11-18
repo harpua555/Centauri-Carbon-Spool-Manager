@@ -261,6 +261,13 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
             except (ValueError, TypeError):
                 _LOGGER.warning("Spool %s history contained invalid JSON, resetting", spool_num)
 
+        # Determine file name if available
+        file_name = "Unknown"
+        if self.file_name_entity:
+            file_state = self.hass.states.get(self.file_name_entity)
+            if file_state and file_state.state not in ("unknown", "unavailable"):
+                file_name = file_state.state
+
         # Compute approximate weight in grams for this print
         density_state = self.hass.states.get(f"number.centauri_spool_manager_spool_{spool_num}_density")
         diameter_state = self.hass.states.get("number.centauri_spool_manager_filament_diameter")
@@ -294,27 +301,24 @@ class CentauriSpoolCoordinator(DataUpdateCoordinator):
 
         # Compact entry structure:
         # - t: ISO timestamp
+        # - f: file name (if available)
         # - m: material
         # - mm: length in millimeters
         # - w: weight in grams
         entry = {
             "t": datetime.now().isoformat(timespec="seconds"),
+            "f": file_name,
             "m": material,
             "mm": int(round(extruded_length)),
             "w": weight_g,
         }
 
         entries.append(entry)
-        # Keep last 10 entries by default
-        entries = entries[-10:]
+        # Keep last N entries (attributes can handle more than the 255-char
+        # state limit, since we only store a short summary in the state).
+        entries = entries[-50:]
 
-        # Home Assistant enforces a 255-character maximum for the entity
-        # state string. Trim oldest entries until the JSON fits safely
-        # under that limit.
         history_json = json.dumps(entries)
-        while len(history_json) > 250 and len(entries) > 1:
-            entries = entries[1:]
-            history_json = json.dumps(entries)
 
         _LOGGER.debug(
             "Prepared history entry for spool %s: %s (total_entries=%d, json_len=%d)",
