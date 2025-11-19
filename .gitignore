@@ -23,3 +23,6 @@ desktop.ini
 *.tmp
 *.bak
 *~
+
+# Local AI/dev notes (do not commit)
+DEV_CONVERSATION_NOTES.md
